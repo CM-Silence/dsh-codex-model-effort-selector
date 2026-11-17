@@ -590,8 +590,8 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
     'new running sparkles spawn at the knob position');
   assert.match(src, /100%\{left:-4%;opacity:0\}\}/,
     'and travel leftwards');
-  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{left:var\(--x,4%\);opacity:var\(--b,1\)\}/,
-    'the floating dust exits from its current position');
+  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\)\}100%\{transform:translateX\(-260px\)/,
+    'the floating dust shifts by one constant distance, not by its start position');
   assert.match(src, /@keyframes \$\{P\}-float/, 'Ultra has a float-only animation');
   assert.match(src, /x: \(4 \+ 92 \* hash01\(i \* 17 \+ 9\)\)/, 'floating particles are spread horizontally');
   assert.match(src, /left: s\.x/, 'the spread is applied inline');
