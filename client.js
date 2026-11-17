@@ -434,13 +434,12 @@ window.__ModuleLoader__.load({
 .${P}-dot.hovered{transform:scale(1.75)}
 .${P}-dots{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .${P}-popover.peak .${P}-dot{opacity:0}
-.${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-dot-fly 2.8s linear forwards}
-@keyframes ${P}-dot-fly{0%{transform:translateX(0);opacity:1;animation-timing-function:cubic-bezier(.2,0,.8,.47)}4%{transform:translateX(-4px);opacity:.99;animation-timing-function:linear}100%{transform:translateX(-260px);opacity:0}}
+.${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-exit 2.45s ease-in .35s forwards}
 .${P}-sparks{opacity:0;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .8s ease}
 .${P}-popover.peak .${P}-sparks-float,
 .${P}-popover.fast-mode .${P}-sparks-run{opacity:1}
 .${P}-popover.peak:not(.fast-mode) .${P}-sparks-float{animation:${P}-fade-in .8s ease both}
-.${P}-sp{position:absolute;left:var(--x,4%);width:3px;height:3px;border-radius:50%;background:#fff;opacity:var(--b,1);transform:scale(var(--b,1))}
+.${P}-sp{position:absolute;left:var(--x,4%);top:clamp(2px,var(--sp-top,50%),calc(100% - 5px));width:3px;height:3px;border-radius:50%;background:#fff;opacity:var(--b,1);transform:scale(var(--b,1))}
 .${P}-sp-float{animation:${P}-float var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s)}
 .${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 2.45s ease-in .35s forwards}
 .${P}-sp-run{left:104%;opacity:0;animation:${P}-drift var(--dur,3s) linear infinite;animation-delay:var(--delay,0s)}
@@ -1706,12 +1705,12 @@ body[data-ds-dark-theme] .${P}-root{
               h('div', { className: `${P}-sparks ${P}-sparks-float` },
                 ...sparkles.map(s => h('i', {
                   key: s.key, className: `${P}-sp ${P}-sp-float`,
-                  style: { left: s.x, '--x': s.x, top: s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.delay }
+                  style: { left: s.x, '--x': s.x, '--sp-top': s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.delay }
                 }))),
               h('div', { className: `${P}-sparks ${P}-sparks-run` },
                 ...sparkles.map(s => h('i', {
                   key: s.key, className: `${P}-sp ${P}-sp-run`,
-                  style: { top: s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.runDelay }
+                  style: { '--sp-top': s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.runDelay }
                 }))),
               /* the arrival bloom: keyed on the arrival counter, so mounting a
                * new key restarts every mote's animation from 0% */

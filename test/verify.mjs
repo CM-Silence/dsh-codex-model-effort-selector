@@ -606,11 +606,11 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
     'the floating dust waits, then accelerates once without keyframe stops');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
     'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 2.8s linear/,
-    'Fast mode accelerates dots from rest to the same top speed');
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-exit 2\.45s ease-in \.35s/,
+    'Fast mode reuses the float-dust exit for the left tick dots');
   assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
-  assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1;animation-timing-function:cubic-bezier\(\.2,0,\.8,\.47\)\}4%\{transform:translateX\(-4px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
-    'the dot ramps up over the first 4% and then holds one speed');
+  assert.match(src, /top:clamp\(2px,var\(--sp-top,50%\),calc\(100% - 5px\)\)/,
+    'the dust keeps a small gap from the rail edges');
   assert.match(src, /className: `\$\{P\}-dots`/, 'the dots live in a clipping layer');
   assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/,
     'Ultra hides all level dots even with Fast on');
