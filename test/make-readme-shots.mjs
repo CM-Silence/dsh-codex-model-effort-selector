@@ -103,6 +103,8 @@ function effortPane(id, opts = {}) {
   const e = EFFORTS[idxOf(id)];
   const peak = id === 'max';
   const pos = idxOf(id) / (EFFORTS.length - 1);
+  const baseDots = EFFORTS.map((_, i) =>
+    `<i class="${P}-dot" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
   const dots = EFFORTS.map((_, i) =>
     `<i class="${P}-dot${i <= idxOf(id) ? ' passed' : ''}${i < idxOf(id) ? ' left-of-knob' : ''}" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
   const title = `<span class="${P}-heading">${e.label}${svg(ICON.chevron, '10px')}</span>`;
@@ -124,8 +126,9 @@ function effortPane(id, opts = {}) {
       <div class="${P}-warning"><span>更快消耗使用额度</span></div>
       <button class="${P}-tool ${P}-reset">${svg(ICON.reset, '16px')}</button>
       <div class="${P}-rail" style="${railStyle}">
+        <div class="${P}-dots">${baseDots}</div>
         <div class="${P}-fill"></div>
-        <div class="${P}-dots">${dots}</div>
+        <div class="${P}-dots ${P}-tickOverlay" aria-hidden="true"><div class="${P}-tickMotion">${dots}</div></div>
         <div class="${P}-sparks">${sparkles()}</div>
         <div class="${P}-knob"></div>
       </div>

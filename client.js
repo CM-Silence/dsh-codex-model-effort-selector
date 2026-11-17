@@ -424,7 +424,7 @@ window.__ModuleLoader__.load({
 .${P}-rail::before{content:"";position:absolute;inset:-6px -3px;border-radius:20px}
 .${P}-rail:focus-visible{outline:2px solid var(--dsw-focus-ring-color,#3989e9);outline-offset:2px}
 .${P}-fill,.${P}-sparks{position:absolute;inset:0 auto 0 0;width:calc((100% - 30px)*var(--${P}-pos,0) + 15px);border-radius:13px 0 0 13px;overflow:hidden;pointer-events:none;transition:width .18s cubic-bezier(.2,.8,.2,1)}
-.${P}-fill{background:var(--${P}-fill,#3a83f7);transition:width .18s cubic-bezier(.2,.8,.2,1),background .25s ease}
+.${P}-fill{z-index:1;background:var(--${P}-fill,#3a83f7);transition:width .18s cubic-bezier(.2,.8,.2,1),background .25s ease}
 .${P}-fill::after{content:"";position:absolute;inset:0 auto 0 0;width:155%;background:var(--${P}-peakGradient,linear-gradient(90deg,#3b83f6 0%,#3b82f6 10%,#3d7bf3 20%,#4c75f4 30%,#6473fa 40%,#8d80fc 50%,#9375fd 55%,#9d78fd 60%,#a779fe 65%,#a476fe 70%,#9e73fe 75%,#9166fe 80%,#845af9 85%,#7d55f6 93%,#7448ee 100%));opacity:0;transition:opacity .3s ease;animation:${P}-colorflow 3.8s ease-in-out infinite alternate paused}
 .${P}-fill::before{content:"";position:absolute;inset:-10px -40px;z-index:1;background:linear-gradient(100deg,transparent 18%,#ffffff08 35%,#ffffff30 48%,#ffffff06 66%,transparent 84%);opacity:0;transition:opacity .3s ease;animation:${P}-shimmer 4.5s ease-in-out infinite alternate paused}
 .${P}-popover.peak .${P}-fill::before,.${P}-popover.peak .${P}-fill::after{opacity:1}
@@ -437,14 +437,20 @@ window.__ModuleLoader__.load({
    themes (the light knob is white, the dark knob is #f9fafb). */
 .${P}-dot.passed{background:var(--${P}-dotPassed,rgba(255,255,255,.55))}
 .${P}-dot.hovered{transform:scale(1.75)}
-.${P}-dots{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.${P}-popover.peak .${P}-dot{opacity:0}
-.${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-exit 1.3s cubic-bezier(.55,0,1,.55) forwards paused}
-.${P}-popover:not(.fast-mode):not(.peak) .${P}-dot.left-of-knob{animation:${P}-dot-return .45s ease both}
-.${P}-popover.fast-mode:not(.peak) .${P}-rail[data-animating] .${P}-dot.left-of-knob{animation-play-state:running}
-.${P}-popover.fast-mode .${P}-rail[data-fast-ticks-hidden] .${P}-dot{opacity:0;animation:none;transition:none}
-@keyframes ${P}-dot-return{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
-.${P}-sparks{opacity:0;contain:paint;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .85s ease}
+/* Real ticks stay beneath the opaque fill and are exposed as it retreats.
+   The overlay supplies the white filled ticks and the one-shot Fast departure. */
+.${P}-dots{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.${P}-tickOverlay{z-index:1}
+.${P}-tickMotion{position:absolute;inset:0}
+.${P}-tickOverlay .${P}-dot:not(.left-of-knob){visibility:hidden}
+.${P}-popover.peak .${P}-tickOverlay{visibility:hidden}
+.${P}-popover.fast-mode .${P}-tickMotion{animation:${P}-exit 1.3s cubic-bezier(.55,0,1,.55) forwards paused}
+.${P}-popover:not(.fast-mode) .${P}-tickMotion{animation:${P}-dot-return .45s ease both}
+.${P}-popover.fast-mode .${P}-rail[data-animating] .${P}-tickMotion{animation-play-state:running}
+.${P}-popover.fast-mode .${P}-rail[data-fast-ticks-hidden] .${P}-tickOverlay{visibility:hidden}
+.${P}-popover.fast-mode .${P}-rail[data-fast-ticks-hidden] .${P}-tickMotion{animation:none}
+@keyframes ${P}-dot-return{from{opacity:0}to{opacity:1}}
+.${P}-sparks{z-index:1;opacity:0;contain:paint;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .85s ease}
 .${P}-popover.peak .${P}-sparks,.${P}-popover.fast-mode .${P}-sparks{opacity:1}
 /* Each full-width path supplies percentage-based horizontal travel. Its child
    retains its float phase while Fast supplies the horizontal motion. */
@@ -452,7 +458,7 @@ window.__ModuleLoader__.load({
 .${P}-sp{position:absolute;left:104%;top:clamp(2px,var(--sp-top,50%),calc(100% - 5px));width:3px;height:3px;border-radius:50%;background:#fff;animation:${P}-float var(--dur,3s) ease-in-out var(--delay,0s) infinite paused}
 .${P}-popover:not(.fast-mode) .${P}-rail[data-animating] .${P}-sp{animation-play-state:running}
 @keyframes ${P}-float{0%,100%{transform:translateY(1px) scale(var(--b,1));opacity:var(--b,1)}50%{transform:translateY(-1.5px) scale(var(--b,1));opacity:calc(var(--b,1)*.65)}}
-@keyframes ${P}-exit{0%{transform:translateX(0) scale(var(--b,1));opacity:var(--b,1)}100%{transform:translateX(-260px) scale(var(--b,1));opacity:0}}
+@keyframes ${P}-exit{from{transform:translateX(0);opacity:1}to{transform:translateX(-260px);opacity:0}}
 
 /* ---------- arrival bloom ----------
    Reaching the far-right stop fires a ONE-SHOT burst of motes out of the knob,
@@ -712,8 +718,8 @@ body[data-ds-dark-theme] .${P}-root{
       reduced?.addEventListener('change', refresh);
       return {
         setState(next) {
-          /* Ultra has already hidden every tick. Keep them hidden for the
-           * remainder of this Fast activation, including subsequent level changes. */
+          /* Ultra hides the decorative tick overlay for this Fast activation.
+           * The real ticks remain under the fill throughout level changes. */
           if (!next.fast) rail.removeAttribute('data-fast-ticks-hidden');
           else if (next.peak) rail.setAttribute('data-fast-ticks-hidden', '');
           state = next;
@@ -1787,13 +1793,20 @@ body[data-ds-dark-theme] .${P}-root{
               onPointerLeave: () => setHovered(-1),
               onKeyDown: keyDown
             },
-              h('div', { className: `${P}-fill` }),
               h('div', { className: `${P}-dots` },
                 ...efforts.map((effort, i) => h('i', {
                   key: effort.id,
-                  className: `${P}-dot${i <= index ? ' passed' : ''}${i < index ? ' left-of-knob' : ''}${hovered === i ? ' hovered' : ''}`,
+                  className: `${P}-dot${hovered === i ? ' hovered' : ''}`,
                   style: { [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0 }
                 }))),
+              h('div', { className: `${P}-fill` }),
+              h('div', { className: `${P}-dots ${P}-tickOverlay`, 'aria-hidden': true },
+                h('div', { className: `${P}-tickMotion` },
+                  ...efforts.map((effort, i) => h('i', {
+                    key: effort.id,
+                    className: `${P}-dot${i <= index ? ' passed' : ''}${i < index ? ' left-of-knob' : ''}${hovered === i ? ' hovered' : ''}`,
+                    style: { [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0 }
+                  })))),
               h('div', { className: `${P}-sparks`, 'aria-hidden': true },
                 ...sparkles.map(s => h('div', {
                   key: s.key, className: `${P}-sp-path`,

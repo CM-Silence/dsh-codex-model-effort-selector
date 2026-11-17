@@ -86,6 +86,8 @@ function effortPane(id, opts = {}) {
   const index = idxOf(id);
   const pos = index / (EFFORTS.length - 1);
   const message = !!opts.message;
+  const baseDots = EFFORTS.map((_, i) =>
+    `<i class="${P}-dot" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
   const dots = EFFORTS.map((_, i) =>
     `<i class="${P}-dot${i <= index ? ' passed' : ''}${i < index ? ' left-of-knob' : ''}" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
   const title = (peak || message) ? '' : `<span class="${P}-heading">${e.label}${svg(I.chevron, '10px')}</span>`;
@@ -98,7 +100,9 @@ function effortPane(id, opts = {}) {
       <div class="${P}-warning"><span>更快消耗使用额度</span></div>
       <button class="${P}-tool ${P}-reset">${svg(I.reset, '16px')}</button>
       <div class="${P}-rail" style="--${P}-fill:${FILL_DARK[id]};--${P}-track:${TRACK(id)};--${P}-dot:var(--dsw-alias-label-caption,#b6b6b8);--${P}-pos:${pos}">
-        <div class="${P}-fill"></div><div class="${P}-dots">${dots}</div>
+        <div class="${P}-dots">${baseDots}</div>
+        <div class="${P}-fill"></div>
+        <div class="${P}-dots ${P}-tickOverlay" aria-hidden="true"><div class="${P}-tickMotion">${dots}</div></div>
         <div class="${P}-sparks">${peak ? sparkles() : ''}</div>
         <div class="${P}-knob"></div>
       </div>

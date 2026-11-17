@@ -612,26 +612,40 @@ check('Ultra and Fast share continuous, compositor-driven dust', () => {
   assert.match(src, /top:clamp\(2px,var\(--sp-top,50%\),calc\(100% - 5px\)\)/,
     'dust stays inside the rail');
   assert.match(src, /className: `\$\{P\}-dots`/, 'ticks are clipped');
-  assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/, 'Ultra hides ticks');
+  assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-tickOverlay\{visibility:hidden\}/, 'Ultra hides the decorative overlay');
   assert.doesNotMatch(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\{opacity:0\}/,
     'Fast keeps ticks ahead of the knob visible');
 });
 
 check('non-Ultra Fast ticks leave the rail in the plugin and preview', () => {
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-rail\[data-animating\] \.\$\{P\}-dot\.left-of-knob\{animation-play-state:running\}/,
-    'the running selector overrides the paused Fast animation');
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-rail\[data-animating\] \.\$\{P\}-tickMotion\{animation-play-state:running\}/,
+    'only the decorative layer plays the Fast departure');
   for (const file of ['make-preview.mjs', 'make-readme-shots.mjs', 'make-dark-shot.mjs']) {
     const preview = readFileSync(join(HERE, file), 'utf8');
     assert.match(preview, /i < (?:index|idxOf\(id\)) \? ' left-of-knob'/,
       `${file} departs only ticks strictly before the current stop`);
-    assert.ok(preview.includes('<div class="${P}-dots">${dots}</div>'), `${file} clips the departing ticks`);
+    assert.ok(preview.includes('<div class="${P}-tickMotion">${dots}</div>'), `${file} animates tick copies`);
+    const base = preview.indexOf('<div class="${P}-dots">${baseDots}</div>');
+    const fill = preview.indexOf('<div class="${P}-fill"></div>');
+    assert.ok(base >= 0 && base < fill, `${file} keeps real ticks below the fill`);
   }
 });
 
-check('Fast keeps the tick field hidden after leaving Ultra', () => {
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-rail\[data-fast-ticks-hidden\] \.\$\{P\}-dot\{opacity:0;animation:none;transition:none\}/,
-    'lowering effort preserves hidden ticks through the next paint');
+check('Fast keeps the decorative tick layer hidden after leaving Ultra', () => {
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-rail\[data-fast-ticks-hidden\] \.\$\{P\}-tickOverlay\{visibility:hidden\}/,
+    'lowering effort preserves the hidden departure layer');
   assert.match(src, /\[hasEfforts, sparkles, sessionId\]/, 'tick history belongs to the current session');
+});
+
+check('real ticks stay fixed beneath the fill while copies animate above it', () => {
+  const base = src.match(/h\('div', \{ className: `\$\{P\}-dots` \},([\s\S]*?)h\('div', \{ className: `\$\{P\}-fill` \}\)/);
+  assert.ok(base, 'real tick layer is before the fill');
+  assert.doesNotMatch(base[1], /left-of-knob|passed|tickMotion/, 'real ticks have no departure state');
+  assert.match(src, /\.\$\{P\}-dots\{[^}]*z-index:0/, 'real tick layer stays beneath the fill');
+  assert.match(src, /\.\$\{P\}-fill\{z-index:1/, 'opaque fill covers the real passed ticks');
+  assert.match(src, /\.\$\{P\}-tickOverlay\{z-index:1\}/, 'decorative ticks render above the fill');
+  assert.match(src, /\.\$\{P\}-tickOverlay \.\$\{P\}-dot:not\(\.left-of-knob\)\{visibility:hidden\}/,
+    'the departure layer contains only ticks strictly before the knob');
 });
 
 /* ── compact composer seat ─────────────────────────────────────────────── */
