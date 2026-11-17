@@ -84,9 +84,10 @@ function sparkles(count = 22) {
   for (let i = 0; i < count; i++) {
     const b = (0.5 + 0.5 * hash01(i * 7 + 3)).toFixed(2);
     const top = (8 + 84 * hash01(i * 13 + 5)).toFixed(1);
-    const dur = (1.6 + 2.4 * hash01(i * 3 + 11)).toFixed(2);
-    const delay = (-(i * PHI % 1) * 4).toFixed(2);
-    out += `<i class="${P}-sp" style="top:${top}%;--b:${b};--dur:${dur}s;--delay:${delay}s"></i>`;
+    const dur = (3.2 + 2.4 * hash01(i * 3 + 11)).toFixed(2);
+    const delay = (-(i * PHI % 1) * 5.6).toFixed(2);
+    const phase = (100 - 92 * (i * PHI % 1)) / 108;
+    out += `<div class="${P}-sp-path" style="--phase:${phase}"><i class="${P}-sp" style="--sp-top:${top}%;--b:${b};--dur:${dur}s;--delay:${delay}s"></i></div>`;
   }
   return out;
 }
@@ -103,7 +104,7 @@ function effortPane(id, opts = {}) {
   const peak = id === 'max';
   const pos = idxOf(id) / (EFFORTS.length - 1);
   const dots = EFFORTS.map((_, i) =>
-    `<i class="${P}-dot${i <= idxOf(id) ? ' passed' : ''}" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
+    `<i class="${P}-dot${i <= idxOf(id) ? ' passed' : ''}${i < idxOf(id) ? ' left-of-knob' : ''}" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
   const title = `<span class="${P}-heading">${e.label}${svg(ICON.chevron, '10px')}</span>`;
   const railStyle = [
     `--${P}-fill:${FILL[id]}`,
@@ -124,7 +125,7 @@ function effortPane(id, opts = {}) {
       <button class="${P}-tool ${P}-reset">${svg(ICON.reset, '16px')}</button>
       <div class="${P}-rail" style="${railStyle}">
         <div class="${P}-fill"></div>
-        ${dots}
+        <div class="${P}-dots">${dots}</div>
         <div class="${P}-sparks">${sparkles()}</div>
         <div class="${P}-knob"></div>
       </div>

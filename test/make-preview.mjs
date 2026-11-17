@@ -19,9 +19,15 @@ const cssEnd = src.indexOf('`;', cssStart);
 if (cssStart === -1 || cssEnd === -1) throw new Error('CSS block not found');
 let css = src.slice(cssStart + 'const CSS = `'.length, cssEnd);
 
-// ---- extract the sparkle builder (to prove determinism) ----
-const sparkFn = src.match(/const PHI = [\s\S]*?\n    }\n/);
-if (!sparkFn) throw new Error('sparkle builder not found');
+// Use the shipped particle distribution and controller in the live preview.
+const dustStart = src.indexOf('const PHI =');
+const dustEnd = src.indexOf('\n    }', src.indexOf('function buildSparkles(')) + 6;
+const motionStart = src.indexOf('function createDustMotion(');
+const motionEnd = src.indexOf('\n    }', motionStart) + 6;
+if (dustStart < 0 || dustEnd < dustStart || motionStart < 0 || motionEnd < motionStart) throw new Error('dust source not found');
+const dustSource = src.slice(dustStart, dustEnd);
+const motionSource = src.slice(motionStart, motionEnd);
+const buildSparkles = new Function(`${dustSource}; return buildSparkles;`)();
 
 // Resolve the `${P}` template placeholders exactly as the plugin does.
 const P = 'cmes';
@@ -64,17 +70,8 @@ const I = {
 };
 
 function sparkles(count = 22) {
-  const PHI = 0.6180339887498949;
-  const hash01 = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-  let out = '';
-  for (let i = 0; i < count; i++) {
-    const b = (0.5 + 0.5 * hash01(i * 7 + 3)).toFixed(2);
-    const top = (8 + 84 * hash01(i * 13 + 5)).toFixed(1);
-    const dur = (1.6 + 2.4 * hash01(i * 3 + 11)).toFixed(2);
-    const delay = (-(i * PHI % 1) * 4).toFixed(2);
-    out += `<i class="${P}-sp" style="top:${top}%;--b:${b};--dur:${dur}s;--delay:${delay}s"></i>`;
-  }
-  return out;
+  return buildSparkles(count).map(s =>
+    `<div class="${P}-sp-path" style="--phase:${s.phase}"><i class="${P}-sp" style="--sp-top:${s.top};--b:${s.b};--dur:${s.dur};--delay:${s.delay}"></i></div>`).join('');
 }
 
 const EFFORTS = [
@@ -153,7 +150,7 @@ function effortPane(index, opts = {}) {
   const pos = index / (EFFORTS.length - 1);
   const message = !!opts.message;
   const dots = EFFORTS.map((_, i) =>
-    `<i class="${P}-dot${i <= index ? ' passed' : ''}" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
+    `<i class="${P}-dot${i <= index ? ' passed' : ''}${i < index ? ' left-of-knob' : ''}" style="--${P}-tick:${i / (EFFORTS.length - 1)}"></i>`).join('');
   const title = peak ? '' : `<span class="${P}-heading">${e.label}${svg(I.chevron, '10px')}</span>`;
   const railStyle = [
     `--${P}-fill:${fill[e.id]}`,
@@ -187,7 +184,7 @@ function effortPane(index, opts = {}) {
       <button class="${P}-tool ${P}-reset">${svg(I.reset, '16px')}</button>
       <div class="${P}-rail${opts.dragging ? ' dragging' : ''}" style="${railStyle}">
         <div class="${P}-fill"></div>
-        ${dots}
+        <div class="${P}-dots">${dots}</div>
         <div class="${P}-sparks">${sparkles()}</div>
         ${bloom}
         <div class="${P}-knob"></div>
@@ -332,7 +329,7 @@ const html = `<!DOCTYPE html>
 </head><body>
 <h1 style="font-size:15px;margin:0 0 4px">插件实渲染预览（client.js 的真实 CSS + 真实结构）</h1>
 <p style="font-size:12px;color:#707073;margin:0 0 22px;line-height:1.7;max-width:860px">
-  CSS 与类名直接取自 <code>client.js</code> 的 <code>CSS</code> 模板，未做任何改写。此页只替换 React 运行时。<br>
+  CSS、星尘分布与动画控制器直接取自 <code>client.js</code>。点击 ⚡ 可查看 Fast 的加减速过渡。<br>
   ① 每档一色（填充 / 轨道 / 标题同步）&nbsp; ② 模型面板两级下钻&nbsp; ③ <b>深色模式</b>：右列是深色主题下的同一组件——填充、轨道、标题 ink、旋钮与 Ultra 渐变全部换成按官方深色表面解出的色板
 </p>
 
@@ -375,6 +372,26 @@ const html = `<!DOCTYPE html>
     <div class="wrap stageDark" style="padding:12px">${trigger(2, 'dark')}${trigger(4, 'dark')}${trigger(6, 'dark')}</div>
   </div>
 </div>
+<script>
+const P = 'cmes';
+${dustSource}
+${motionSource}
+document.querySelectorAll('.cmes-popover').forEach(panel => {
+  const rail = panel.querySelector('.cmes-rail');
+  if (!rail) return;
+  const motion = createDustMotion(rail, buildSparkles(22));
+  const button = panel.querySelector('.cmes-fast');
+  function update() {
+    const fast = panel.classList.contains('fast-mode');
+    button.classList.toggle('active', fast);
+    button.setAttribute('aria-pressed', fast);
+    button.querySelector('svg').style.fill = fast ? 'currentColor' : 'none';
+    motion.setState({ active: true, fast, peak: panel.classList.contains('peak') });
+  }
+  button.addEventListener('click', () => { panel.classList.toggle('fast-mode'); update(); });
+  update();
+});
+</script>
 </body></html>`;
 
 writeFileSync(join(HERE, 'preview.html'), html, 'utf8');

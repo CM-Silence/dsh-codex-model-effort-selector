@@ -324,7 +324,7 @@ window.__ModuleLoader__.load({
 .${P}-root button{font:inherit;cursor:pointer;border:0;background:transparent;color:inherit}
 
 /* ---------- trigger (collapsed seat) ---------- */
-.${P}-trigger{display:inline-flex;align-items:center;gap:5px;max-width:250px;height:28px;padding:0 7px;border-radius:8px;color:var(--dsw-alias-label-caption);font-size:13px!important}
+.${P}-root .${P}-trigger{display:inline-flex;align-items:center;gap:5px;max-width:250px;height:28px;padding:0 7px;border-radius:8px;color:var(--dsw-alias-label-caption);font-size:13px!important}
 .${P}-trigger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}
 .${P}-trigger:disabled{cursor:default;opacity:.55}
 .${P}-trigger:focus-visible{outline:2px solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}
@@ -371,16 +371,19 @@ window.__ModuleLoader__.load({
 
 /* ---------- popover ---------- */
 .${P}-popover{position:fixed;bottom:var(--${P}-bottom,40px);left:var(--${P}-left,12px);width:272px;max-width:calc(100vw - 24px);height:var(--${P}-height,104px);max-height:calc(100vh - var(--${P}-bottom,40px) - 12px);padding:0;background:var(--dsw-specific-menu,var(--dsw-alias-bg-layer-2));border-radius:14px;box-shadow:var(--dsw-elevation-panel);backdrop-filter:var(--dsw-menu-backdrop-filter);z-index:1100;overflow:hidden;transform-origin:bottom right;transition:opacity .18s ease,transform .18s ease,height .2s cubic-bezier(.2,.8,.2,1),visibility 0s}
-.${P}-popover.closed{opacity:0;pointer-events:none;visibility:hidden;transform:translateY(5px) scale(.98);transition-delay:0s,0s,0s,.18s}
+.${P}-popover.closed{opacity:0;pointer-events:none;visibility:hidden;transform:translateY(5px) scale(.98);transition:opacity .18s ease,transform .18s ease,visibility 0s .18s}
+.${P}-popover.closed:not(.present){transition:none}
+.${P}-popover:focus{outline:none}
 .${P}-popover.peak{--dsw-elevation-stroke-color:rgba(145,78,246,.28)}
 
 /* ---------- panes ---------- */
 .${P}-pane{position:absolute;left:0;right:0;bottom:0;opacity:1;transform:translateY(0);transition:opacity .14s ease,transform .2s ease,visibility 0s}
 .${P}-pane.hidden{opacity:0;pointer-events:none;visibility:hidden;transform:translateY(5px);transition-delay:0s,0s,.14s}
+.${P}-popover.closed .${P}-pane,.${P}-popover.closed .${P}-page{transition:none}
 
 /* ---------- effort pane ---------- */
 .${P}-main{height:104px}
-.${P}-tool{position:absolute;top:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;padding:0;border-radius:8px;color:var(--dsw-alias-label-caption)}
+.${P}-root .${P}-tool{position:absolute;top:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;padding:0;border-radius:8px;color:var(--dsw-alias-label-secondary,#707073)}
 .${P}-tool:hover{background:var(--dsw-alias-interactive-bg-hover)}
 .${P}-fast{left:7px}
 .${P}-reset{right:7px}
@@ -422,9 +425,11 @@ window.__ModuleLoader__.load({
 .${P}-rail:focus-visible{outline:2px solid var(--dsw-focus-ring-color,#3989e9);outline-offset:2px}
 .${P}-fill,.${P}-sparks{position:absolute;inset:0 auto 0 0;width:calc((100% - 30px)*var(--${P}-pos,0) + 15px);border-radius:13px 0 0 13px;overflow:hidden;pointer-events:none;transition:width .18s cubic-bezier(.2,.8,.2,1)}
 .${P}-fill{background:var(--${P}-fill,#3a83f7);transition:width .18s cubic-bezier(.2,.8,.2,1),background .25s ease}
-.${P}-popover.peak .${P}-fill{background:var(--${P}-peakGradient,linear-gradient(90deg,#3b83f6 0%,#3b82f6 10%,#3d7bf3 20%,#4c75f4 30%,#6473fa 40%,#8d80fc 50%,#9375fd 55%,#9d78fd 60%,#a779fe 65%,#a476fe 70%,#9e73fe 75%,#9166fe 80%,#845af9 85%,#7d55f6 93%,#7448ee 100%));background-size:155% 100%;animation:${P}-colorflow 3.8s ease-in-out infinite alternate}
-.${P}-popover.peak .${P}-fill::before{content:"";position:absolute;inset:-10px -40px;background:linear-gradient(100deg,transparent 18%,#ffffff08 35%,#ffffff30 48%,#ffffff06 66%,transparent 84%);animation:${P}-shimmer 4.5s ease-in-out infinite alternate}
-@keyframes ${P}-colorflow{from{background-position:0 0}to{background-position:100% 0}}
+.${P}-fill::after{content:"";position:absolute;inset:0 auto 0 0;width:155%;background:var(--${P}-peakGradient,linear-gradient(90deg,#3b83f6 0%,#3b82f6 10%,#3d7bf3 20%,#4c75f4 30%,#6473fa 40%,#8d80fc 50%,#9375fd 55%,#9d78fd 60%,#a779fe 65%,#a476fe 70%,#9e73fe 75%,#9166fe 80%,#845af9 85%,#7d55f6 93%,#7448ee 100%));opacity:0;transition:opacity .3s ease;animation:${P}-colorflow 3.8s ease-in-out infinite alternate paused}
+.${P}-fill::before{content:"";position:absolute;inset:-10px -40px;z-index:1;background:linear-gradient(100deg,transparent 18%,#ffffff08 35%,#ffffff30 48%,#ffffff06 66%,transparent 84%);opacity:0;transition:opacity .3s ease;animation:${P}-shimmer 4.5s ease-in-out infinite alternate paused}
+.${P}-popover.peak .${P}-fill::before,.${P}-popover.peak .${P}-fill::after{opacity:1}
+.${P}-popover.peak .${P}-rail[data-animating] .${P}-fill::before,.${P}-popover.peak .${P}-rail[data-animating] .${P}-fill::after{animation-play-state:running}
+@keyframes ${P}-colorflow{from{transform:translateX(0)}to{transform:translateX(-35.48%)}}
 @keyframes ${P}-shimmer{from{transform:translateX(-45%)}to{transform:translateX(45%)}}
 .${P}-dot{position:absolute;top:11px;left:calc((100% - 30px)*var(--${P}-tick,0) + 15px);width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--${P}-dot,#b6b6b8);pointer-events:none;transition:background .18s ease,opacity .18s ease,transform .14s ease}
 /* a passed tick sits ON the fill, so it takes the knob's own colour: that is
@@ -434,21 +439,20 @@ window.__ModuleLoader__.load({
 .${P}-dot.hovered{transform:scale(1.75)}
 .${P}-dots{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .${P}-popover.peak .${P}-dot{opacity:0}
-.${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-exit 2.45s ease-in .35s forwards}
+.${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-exit 1.3s cubic-bezier(.55,0,1,.55) forwards paused}
 .${P}-popover:not(.fast-mode):not(.peak) .${P}-dot.left-of-knob{animation:${P}-dot-return .45s ease both}
+.${P}-popover.fast-mode:not(.peak) .${P}-rail[data-animating] .${P}-dot.left-of-knob{animation-play-state:running}
+.${P}-popover.fast-mode .${P}-rail[data-fast-ticks-hidden] .${P}-dot{opacity:0;animation:none;transition:none}
 @keyframes ${P}-dot-return{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
-.${P}-sparks{opacity:0;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .8s ease}
-.${P}-popover.peak .${P}-sparks-float,
-.${P}-popover.fast-mode .${P}-sparks-run{opacity:1}
-.${P}-popover.peak:not(.fast-mode) .${P}-sparks-float{animation:${P}-fade-in .8s ease both}
-.${P}-sp{position:absolute;left:var(--x,4%);top:clamp(2px,var(--sp-top,50%),calc(100% - 5px));width:3px;height:3px;border-radius:50%;background:#fff;opacity:var(--b,1);transform:scale(var(--b,1))}
-.${P}-sp-float{animation:${P}-float var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s)}
-.${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 2.45s ease-in .35s forwards}
-.${P}-sp-run{left:104%;opacity:0;animation:${P}-drift var(--dur,3s) linear infinite;animation-delay:var(--delay,0s)}
-@keyframes ${P}-fade-in{from{opacity:0}to{opacity:1}}
-@keyframes ${P}-float{0%,100%{transform:translateY(0) scale(var(--b,1));opacity:var(--b,1)}50%{transform:translateY(-3px) scale(var(--b,1));opacity:calc(var(--b,1)*.72)}}
+.${P}-sparks{opacity:0;contain:paint;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .85s ease}
+.${P}-popover.peak .${P}-sparks,.${P}-popover.fast-mode .${P}-sparks{opacity:1}
+/* Each full-width path supplies percentage-based horizontal travel. Its child
+   retains its float phase while Fast supplies the horizontal motion. */
+.${P}-sp-path{position:absolute;inset:0;transform:translateX(calc(-108% * var(--phase,0)))}
+.${P}-sp{position:absolute;left:104%;top:clamp(2px,var(--sp-top,50%),calc(100% - 5px));width:3px;height:3px;border-radius:50%;background:#fff;animation:${P}-float var(--dur,3s) ease-in-out var(--delay,0s) infinite paused}
+.${P}-popover:not(.fast-mode) .${P}-rail[data-animating] .${P}-sp{animation-play-state:running}
+@keyframes ${P}-float{0%,100%{transform:translateY(1px) scale(var(--b,1));opacity:var(--b,1)}50%{transform:translateY(-1.5px) scale(var(--b,1));opacity:calc(var(--b,1)*.65)}}
 @keyframes ${P}-exit{0%{transform:translateX(0) scale(var(--b,1));opacity:var(--b,1)}100%{transform:translateX(-260px) scale(var(--b,1));opacity:0}}
-@keyframes ${P}-drift{0%{left:104%;opacity:0}6%{opacity:var(--b,1)}94%{opacity:var(--b,1)}100%{left:-4%;opacity:0}}
 
 /* ---------- arrival bloom ----------
    Reaching the far-right stop fires a ONE-SHOT burst of motes out of the knob,
@@ -488,7 +492,7 @@ window.__ModuleLoader__.load({
    NO snapping — snapping happens on release. The transform transition stays so
    the press itself still deforms smoothly. */
 .${P}-rail.dragging .${P}-knob{transition:transform .14s cubic-bezier(.2,.9,.3,1.2)}
-.${P}-rail.dragging .${P}-fill{transition:none}
+.${P}-rail.dragging .${P}-fill,.${P}-rail.dragging .${P}-sparks{transition:none}
 .${P}-rail.dragging{cursor:grabbing}
 .${P}-noeffort{position:absolute;top:65px;left:12px;right:12px;text-align:center;font-size:12px;line-height:26px;color:var(--dsw-alias-label-secondary)}
 @media (prefers-reduced-motion:reduce){
@@ -626,15 +630,103 @@ body[data-ds-dark-theme] .${P}-root{
         const b = 0.5 + 0.5 * hash01(i * 7 + 3);
         out.push({
           key: i,
-          x: (4 + 92 * hash01(i * 17 + 9)).toFixed(1) + '%',
+          phase: (100 - 92 * (i * PHI % 1)) / 108,
           top: (8 + 84 * hash01(i * 13 + 5)).toFixed(1) + '%',
           b: b.toFixed(2),
-          dur: (1.6 + 2.4 * hash01(i * 3 + 11)).toFixed(2) + 's',
-          delay: (-(i * PHI % 1) * 4).toFixed(2) + 's',
-          runDelay: (0.06 + i * 0.08).toFixed(2) + 's'
+          dur: (3.2 + 2.4 * hash01(i * 3 + 11)).toFixed(2) + 's',
+          delay: (-(i * PHI % 1) * 5.6).toFixed(2) + 's',
+          travel: 1800 + 1800 * hash01(i * 19 + 7)
         });
       }
       return out;
+    }
+
+    /** Keep one dust field alive across Ultra and Fast transitions. Only the
+     * speed ramp needs JS frames. Steady travel uses compositor animations,
+     * and a paused path retains its position while its child keeps floating. */
+    function createDustMotion(rail, sparkles) {
+      const paths = Array.from(rail.querySelectorAll(`.${P}-sp-path`));
+      const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+      let animations = [];
+      let state = { active: false, fast: false, peak: false };
+      let rate = 0;
+      let frame = 0;
+
+      function stop() {
+        cancelAnimationFrame(frame);
+        frame = 0;
+        animations.forEach(animation => animation.pause());
+        rail.removeAttribute('data-animating');
+      }
+
+      function setRate(value) {
+        rate = value;
+        const speed = reduced?.matches ? value / 2.6 : value;
+        animations.forEach(animation => {
+          animation.updatePlaybackRate(speed);
+          if (value === 0) animation.pause();
+          else if (animation.playState === 'paused') animation.play();
+        });
+      }
+
+      function refresh() {
+        stop();
+        if (!state.active || document.hidden) return;
+        if (!(state.fast || state.peak || rate > 0)) return;
+        rail.setAttribute('data-animating', '');
+        if (!animations.length) {
+          animations = paths.flatMap((node, i) => {
+            if (typeof node.animate !== 'function') return [];
+            const { travel, phase } = sparkles[i];
+            const animation = node.animate([
+              { transform: 'translateX(0)', opacity: 0, offset: 0 },
+              { opacity: 1, offset: 0.04 },
+              { opacity: 1, offset: 0.96 },
+              { transform: 'translateX(-108%)', opacity: 0, offset: 1 }
+            ], { duration: travel, iterations: Infinity, easing: 'linear' });
+            animation.pause();
+            animation.currentTime = phase * travel;
+            return [animation];
+          });
+        }
+        setRate(rate);
+        const target = state.fast ? 1 : 0;
+        if (rate === target) return;
+        const from = rate;
+        const started = performance.now();
+        const duration = state.fast ? 1050 : 850;
+        function ramp(now) {
+          const progress = Math.min(1, (now - started) / duration);
+          const eased = progress * progress * (3 - 2 * progress);
+          setRate(from + (target - from) * eased);
+          if (progress < 1) frame = requestAnimationFrame(ramp);
+          else {
+            frame = 0;
+            if (!state.fast && !state.peak) rail.removeAttribute('data-animating');
+          }
+        }
+        frame = requestAnimationFrame(ramp);
+      }
+
+      document.addEventListener('visibilitychange', refresh);
+      reduced?.addEventListener('change', refresh);
+      return {
+        setState(next) {
+          /* Ultra has already hidden every tick. Keep them hidden for the
+           * remainder of this Fast activation, including subsequent level changes. */
+          if (!next.fast) rail.removeAttribute('data-fast-ticks-hidden');
+          else if (next.peak) rail.setAttribute('data-fast-ticks-hidden', '');
+          state = next;
+          refresh();
+        },
+        destroy() {
+          stop();
+          rail.removeAttribute('data-fast-ticks-hidden');
+          animations.forEach(animation => animation.cancel());
+          document.removeEventListener('visibilitychange', refresh);
+          reduced?.removeEventListener('change', refresh);
+        }
+      };
     }
 
     /* ------------------------------------------------------------------ *
@@ -796,22 +888,7 @@ body[data-ds-dark-theme] .${P}-root{
        * mounted value belongs to (the seat may be reused across sessions) */
       const fastRef = useRef(fast);
       fastRef.current = fast;
-
-      /* Restart the run layer at the knob whenever Fast opens or is switched
-       * on. The particles are then emitted by their own staggered delays, each
-       * already at full speed; no playbackRate ramp. */
-      useEffect(() => {
-        if (!open || !fast) return undefined;
-        const root = popupRef.current;
-        if (!root || typeof root.querySelectorAll !== 'function') return undefined;
-        const animations = Array.from(root.querySelectorAll(`.${P}-sp-run`))
-          .flatMap(node => (typeof node.getAnimations === 'function' ? node.getAnimations() : []));
-        animations.forEach(animation => {
-          animation.playbackRate = 1;
-          animation.currentTime = 0;
-        });
-        return undefined;
-      }, [fast, open]);
+      const dustMotionRef = useRef(null);
       const fastSessionRef = useRef(sessionId);
 
       /* Every Fast change is written through, so it survives the remount that a
@@ -845,6 +922,7 @@ body[data-ds-dark-theme] .${P}-root{
       const disabled = Boolean(locked || !available);
       const sparkles = useMemo(() => buildSparkles(22), []);
       const bloomMotes = useMemo(() => buildBloom(BLOOM_COUNT), []);
+      const hasEfforts = efforts.length > 0;
       const isLastStop = efforts.length > 1 && index === efforts.length - 1;
       const tipShown = tipOn && open && pane === 'effort';
 
@@ -869,6 +947,20 @@ body[data-ds-dark-theme] .${P}-root{
       /* ---------- effects ---------- */
       useEffect(() => { if (available) load(); }, [available, load]);
 
+      useLayoutEffect(() => {
+        if (!hasEfforts || !railRef.current) return;
+        const motion = createDustMotion(railRef.current, sparkles);
+        dustMotionRef.current = motion;
+        return () => {
+          motion.destroy();
+          dustMotionRef.current = null;
+        };
+      }, [hasEfforts, sparkles, sessionId]);
+
+      useLayoutEffect(() => {
+        dustMotionRef.current?.setState({ active: open && pane === 'effort', fast, peak });
+      }, [hasEfforts, open, pane, fast, peak, sessionId]);
+
       /* If the host REUSES this component instance for another session (instead
        * of remounting it), adopt that session's stored Fast preference. On a
        * real remount the useState initializer already did it, and this effect
@@ -883,7 +975,16 @@ body[data-ds-dark-theme] .${P}-root{
 
       useLayoutEffect(() => {
         if (open) { setPresent(true); return; }
-        const timer = setTimeout(() => setPresent(false), 180);
+        /* Keep the visible page intact throughout the close animation. Reset
+         * underneath the hidden popover so the next open starts on effort. */
+        const timer = setTimeout(() => {
+          setPresent(false);
+          setPane('effort');
+          setView(1);
+          setSubProvider(null);
+          setQuery('');
+          setHighlight(0);
+        }, 180);
         return () => clearTimeout(timer);
       }, [open]);
 
@@ -1097,25 +1198,12 @@ body[data-ds-dark-theme] .${P}-root{
       function close() {
         cancelDrag();
         setOpen(false);
-        setQuery('');
-        /* BUG FIX (issue 2): the pane must be reset on close. The popover's
-         * height is driven by `--${P}-height`, which is 104px for the effort
-         * pane but the (taller) list height for the model pane. Leaving
-         * `pane === 'models'` meant reopening animated the height from the list
-         * height back down to 104px — the visible "panel retracts from above"
-         * flicker. Resetting here also matches the original app, which always
-         * opens on the effort pane. The drill-down state resets with it. */
-        setPane('effort');
-        setView(1);
-        setSubProvider(null);
-        setHighlight(0);
         triggerRef.current?.focus({ preventScroll: true });
       }
 
       /* ---------- positioning + outside click + Escape ---------- */
       useLayoutEffect(() => {
         if (!open) return;
-        let frame = 0;
         let watchFrame = 0;
         let lastRect = '';
         function outside(event) {
@@ -1155,24 +1243,24 @@ body[data-ds-dark-theme] .${P}-root{
             node.style.setProperty(`--${P}-bottom`, `${bottom}px`);
           }
         }
-        function resized() {
-          cancelAnimationFrame(frame);
-          const until = performance.now() + 500;
-          const settle = () => { align(); if (performance.now() < until) frame = requestAnimationFrame(settle); };
-          frame = requestAnimationFrame(settle);
-        }
         /* Window resize/scroll do not cover the host moving the trigger without
          * resizing it (sidebar toggle, composer growth, layout transition). The
          * popover is body-fixed now, so it would otherwise stay at stale
          * coordinates. One rect read per frame while open is cheap and catches
          * every layout path, including the 500ms host open animation. */
         function watchAnchor() {
+          if (document.hidden) { watchFrame = 0; return; }
           const rect = triggerRef.current?.getBoundingClientRect();
           if (rect) {
             const key = `${rect.left}|${rect.top}|${rect.width}|${rect.height}`;
             if (key !== lastRect) { lastRect = key; align(); }
           }
           watchFrame = requestAnimationFrame(watchAnchor);
+        }
+        function visibilityChanged() {
+          cancelAnimationFrame(watchFrame);
+          watchFrame = 0;
+          if (!document.hidden) watchAnchor();
         }
         function scrolled(event) {
           /* Scrolling the model list must not re-anchor the panel. */
@@ -1181,8 +1269,9 @@ body[data-ds-dark-theme] .${P}-root{
         }
         document.addEventListener('pointerdown', outside);
         document.addEventListener('keydown', escape, true);
-        window.addEventListener('resize', resized);
+        window.addEventListener('resize', align);
         document.addEventListener('scroll', scrolled, true);
+        document.addEventListener('visibilitychange', visibilityChanged);
         window.visualViewport?.addEventListener('resize', align);
         window.visualViewport?.addEventListener('scroll', align);
         align();
@@ -1190,11 +1279,11 @@ body[data-ds-dark-theme] .${P}-root{
         return () => {
           document.removeEventListener('pointerdown', outside);
           document.removeEventListener('keydown', escape, true);
-          window.removeEventListener('resize', resized);
+          window.removeEventListener('resize', align);
           document.removeEventListener('scroll', scrolled, true);
+          document.removeEventListener('visibilitychange', visibilityChanged);
           window.visualViewport?.removeEventListener('resize', align);
           window.visualViewport?.removeEventListener('scroll', align);
-          cancelAnimationFrame(frame);
           cancelAnimationFrame(watchFrame);
         };
       }, [open]);
@@ -1516,6 +1605,7 @@ body[data-ds-dark-theme] .${P}-root{
       const classes = [
         `${P}-popover`,
         !open ? 'closed' : '',
+        present ? 'present' : '',
         peak ? 'peak' : '',
         fast ? 'fast-mode' : '',
         message ? 'message' : ''
@@ -1704,16 +1794,14 @@ body[data-ds-dark-theme] .${P}-root{
                   className: `${P}-dot${i <= index ? ' passed' : ''}${i < index ? ' left-of-knob' : ''}${hovered === i ? ' hovered' : ''}`,
                   style: { [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0 }
                 }))),
-              h('div', { className: `${P}-sparks ${P}-sparks-float` },
-                ...sparkles.map(s => h('i', {
-                  key: s.key, className: `${P}-sp ${P}-sp-float`,
-                  style: { left: s.x, '--x': s.x, '--sp-top': s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.delay }
-                }))),
-              h('div', { className: `${P}-sparks ${P}-sparks-run` },
-                ...sparkles.map(s => h('i', {
-                  key: s.key, className: `${P}-sp ${P}-sp-run`,
-                  style: { '--sp-top': s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.runDelay }
-                }))),
+              h('div', { className: `${P}-sparks`, 'aria-hidden': true },
+                ...sparkles.map(s => h('div', {
+                  key: s.key, className: `${P}-sp-path`,
+                  style: { '--phase': s.phase }
+                }, h('i', {
+                  className: `${P}-sp`,
+                  style: { '--sp-top': s.top, '--b': s.b, '--dur': s.dur, '--delay': s.delay }
+                })))),
               /* the arrival bloom: keyed on the arrival counter, so mounting a
                * new key restarts every mote's animation from 0% */
               bloom

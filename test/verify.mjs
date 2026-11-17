@@ -16,6 +16,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import assert from 'node:assert/strict';
+import './motion.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const code = readFileSync(join(HERE, '..', 'client.js'), 'utf8');
@@ -359,11 +360,21 @@ check('switching model lands on the MIDDLE level (reference rule)', () => {
   assert.match(src, /\(id === undefined \? \{\} : \{ reasoningEffort: id \}\)/, 'absent, never null');
 });
 
-check('the drill-down state resets on close', () => {
+check('closing preserves the current page until the popover is hidden', () => {
   const closeFn = src.match(/function close\(\) \{([\s\S]*?)\n      \}/);
   assert.ok(closeFn, 'close found');
-  assert.match(closeFn[1], /setView\(1\)/, 'view reset');
-  assert.match(closeFn[1], /setSubProvider\(null\)/, 'sub-provider reset');
+  assert.doesNotMatch(closeFn[1], /setPane|setView|setSubProvider|setQuery|setHighlight/,
+    'closing keeps the current page and search results throughout the fade');
+  const reset = src.match(/const timer = setTimeout\(\(\) => \{([\s\S]*?)\}, 180\);/);
+  assert.ok(reset, 'reset waits for the close animation');
+  assert.match(reset[1], /setPresent\(false\)/, 'popover finishes closing');
+  assert.match(reset[1], /setPane\('effort'\)/, 'next open starts on effort');
+  assert.match(reset[1], /setView\(1\)/, 'view resets after closing');
+  assert.match(reset[1], /setSubProvider\(null\)/, 'sub-provider resets after closing');
+  assert.match(src, /\.\$\{P\}-popover\.closed \.\$\{P\}-pane,\.\$\{P\}-popover\.closed \.\$\{P\}-page\{transition:none\}/,
+    'hidden page resets complete before reopening');
+  assert.match(src, /\.\$\{P\}-popover\.closed:not\(\.present\)\{transition:none\}/,
+    'the reset frame is fully hidden even between display frames');
 });
 
 check('height uses real measured row heights (no clipping)', () => {
@@ -585,47 +596,42 @@ check('NEW: a click slides to the level instead of painting on pointerdown', () 
 
 /* ── rail sparkles ─────────────────────────────────────────────────────── */
 
-check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the level dots', () => {
-  assert.match(src, /@keyframes \$\{P\}-drift\{0%\{left:104%;opacity:0\}/,
-    'new running sparkles spawn at the far end of the rail');
-  assert.match(src, /100%\{left:-4%;opacity:0\}\}/,
-    'and travel leftwards');
-  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\)\}100%\{transform:translateX\(-260px\)/,
-    'the floating dust has one continuous exit curve');
-  assert.match(src, /@keyframes \$\{P\}-float/, 'Ultra has a float-only animation');
-  assert.match(src, /x: \(4 \+ 92 \* hash01\(i \* 17 \+ 9\)\)/, 'floating particles are spread horizontally');
-  assert.match(src, /left: s\.x/, 'the spread is applied inline');
-  assert.match(src, /'--x': s\.x/, 'the exit keyframes start from each sparkle position');
-  assert.match(src, /\.\$\{P\}-sp-float\{animation:\$\{P\}-float/, 'the float layer uses float');
-  assert.match(src, /\.\$\{P\}-sp-run\{left:104%;opacity:0;animation:\$\{P\}-drift/,
-    'the run layer starts at the far end');
-  assert.match(src, /runDelay: \(0\.06 \+ i \* 0\.08\)/, 'run particles are staggered');
-  assert.match(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,220}--delay`\]: s\.runDelay/,
-    'run particles use the staggered delay');
-  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 2\.45s ease-in \.35s/,
-    'the floating dust waits, then accelerates once without keyframe stops');
-  assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
-    'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-exit 2\.45s ease-in \.35s/,
-    'Fast mode reuses the float-dust exit for the left tick dots');
-  assert.match(src, /\.\$\{P\}-popover:not\(\.fast-mode\):not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-return/,
-    'leaving Fast fades the left tick dots back in');
-  assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
+check('Ultra and Fast share continuous, compositor-driven dust', () => {
+  assert.match(src, /function createDustMotion\(rail, sparkles\)/, 'shared motion controller');
+  assert.match(src, /@keyframes \$\{P\}-float/, 'independent vertical float');
+  assert.match(src, /transform: 'translateX\(-108%\)'/, 'horizontal travel uses transforms');
+  assert.match(src, /animation\.updatePlaybackRate\(speed\)/, 'speed changes preserve position');
+  assert.match(src, /animation\.currentTime = phase \* travel/, 'initial phases distribute the dust');
+  assert.doesNotMatch(src, /animation\.currentTime = 0/, 'Fast never resets the timeline');
+  assert.doesNotMatch(src, /sparks-float|sparks-run|sp-run/, 'one particle field serves both modes');
+  assert.match(src, /data-animating/, 'CSS motion follows visibility');
+  assert.match(src, /document\.hidden/, 'background motion pauses');
+  assert.match(src, /active: open && pane === 'effort'/, 'only the visible effort pane animates');
+  assert.match(src, /motion\.destroy\(\)/, 'motion is disposed on unmount');
+  assert.match(src, /i < index \? ' left-of-knob'/, 'only ticks behind the knob fly away');
   assert.match(src, /top:clamp\(2px,var\(--sp-top,50%\),calc\(100% - 5px\)\)/,
-    'the dust keeps a small gap from the rail edges');
-  assert.match(src, /className: `\$\{P\}-dots`/, 'the dots live in a clipping layer');
-  assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/,
-    'Ultra hides all level dots even with Fast on');
+    'dust stays inside the rail');
+  assert.match(src, /className: `\$\{P\}-dots`/, 'ticks are clipped');
+  assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/, 'Ultra hides ticks');
   assert.doesNotMatch(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\{opacity:0\}/,
-    'right-side level dots remain visible in Fast');
-  assert.match(src, /className: `\$\{P\}-sparks \$\{P\}-sparks-float`/, 'the float layer is present');
-  assert.match(src, /className: `\$\{P\}-sparks \$\{P\}-sparks-run`/, 'the run layer is present');
-  assert.doesNotMatch(src, /sparks-exit/, 'there is no cloned exit layer to disappear');
-  assert.match(src, /const root = popupRef\.current;/, 'the run restart reads the popover ref');
-  assert.doesNotMatch(src, /popoverRef/, 'the selector never references an undeclared popoverRef');
-  assert.match(src, /animation\.playbackRate = 1;[\s\S]{0,80}animation\.currentTime = 0;/,
-    'the run layer restarts at full speed');
-  assert.doesNotMatch(src, /playbackRate = 0\.15/, 'the run layer no longer accelerates from a low rate');
+    'Fast keeps ticks ahead of the knob visible');
+});
+
+check('non-Ultra Fast ticks leave the rail in the plugin and preview', () => {
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-rail\[data-animating\] \.\$\{P\}-dot\.left-of-knob\{animation-play-state:running\}/,
+    'the running selector overrides the paused Fast animation');
+  for (const file of ['make-preview.mjs', 'make-readme-shots.mjs', 'make-dark-shot.mjs']) {
+    const preview = readFileSync(join(HERE, file), 'utf8');
+    assert.match(preview, /i < (?:index|idxOf\(id\)) \? ' left-of-knob'/,
+      `${file} departs only ticks strictly before the current stop`);
+    assert.ok(preview.includes('<div class="${P}-dots">${dots}</div>'), `${file} clips the departing ticks`);
+  }
+});
+
+check('Fast keeps the tick field hidden after leaving Ultra', () => {
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-rail\[data-fast-ticks-hidden\] \.\$\{P\}-dot\{opacity:0;animation:none;transition:none\}/,
+    'lowering effort preserves hidden ticks through the next paint');
+  assert.match(src, /\[hasEfforts, sparkles, sessionId\]/, 'tick history belongs to the current session');
 });
 
 /* ── compact composer seat ─────────────────────────────────────────────── */
