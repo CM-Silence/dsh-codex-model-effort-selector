@@ -602,11 +602,11 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
   assert.match(src, /runDelay: \(0\.06 \+ i \* 0\.08\)/, 'run particles are staggered');
   assert.match(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,220}--delay`\]: s\.runDelay/,
     'run particles use the staggered delay');
-  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 7s linear/,
+  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 2.8s linear/,
     'the floating dust accelerates from rest to the same top speed as new dust');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
     'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 7s linear/,
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 2.8s linear/,
     'Fast mode accelerates dots from rest to the same top speed');
   assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
   assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1;animation-timing-function:cubic-bezier\(\.3,0,\.75,\.55\)\}8%\{transform:translateX\(-12px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
