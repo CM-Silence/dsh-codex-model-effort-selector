@@ -590,8 +590,8 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
     'new running sparkles spawn at the knob position');
   assert.match(src, /100%\{left:-4%;opacity:0\}\}/,
     'and travel leftwards');
-  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\)\}100%\{transform:translateX\(-260px\)/,
-    'the floating dust shifts by one constant distance, not by its start position');
+  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\);animation-timing-function:cubic-bezier\(\.3,0,\.7,1\)\}12%\{transform:translateX\(-18px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
+    'the floating dust ramps up then shifts by one constant distance');
   assert.match(src, /@keyframes \$\{P\}-float/, 'Ultra has a float-only animation');
   assert.match(src, /x: \(4 \+ 92 \* hash01\(i \* 17 \+ 9\)\)/, 'floating particles are spread horizontally');
   assert.match(src, /left: s\.x/, 'the spread is applied inline');
@@ -602,15 +602,15 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
   assert.match(src, /runDelay: \(0\.06 \+ i \* 0\.08\)/, 'run particles are staggered');
   assert.match(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,220}--delay`\]: s\.runDelay/,
     'run particles use the staggered delay');
-  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 9s ease-in/,
+  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 7s linear/,
     'the floating dust accelerates from rest to the same top speed as new dust');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
     'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 9s ease-in/,
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 7s linear/,
     'Fast mode accelerates dots from rest to the same top speed');
   assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
-  assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1\}100%\{transform:translateX\(-260px\)/,
-    'all tick dots travel the same distance, so they cannot bunch up');
+  assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1;animation-timing-function:cubic-bezier\(\.3,0,\.7,1\)\}12%\{transform:translateX\(-18px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
+    'the dot ramps up over the first 12% and then holds one speed');
   assert.match(src, /className: `\$\{P\}-dots`/, 'the dots live in a clipping layer');
   assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/,
     'Ultra hides all level dots even with Fast on');
