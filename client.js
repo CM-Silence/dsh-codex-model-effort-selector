@@ -441,11 +441,11 @@ window.__ModuleLoader__.load({
 .${P}-sp{position:absolute;left:var(--x,4%);width:3px;height:3px;border-radius:50%;background:#fff;opacity:var(--b,1);transform:scale(var(--b,1))}
 .${P}-sp-float{animation:${P}-float var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s)}
 .${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 1.4s cubic-bezier(.32,0,.67,.2) forwards}
-.${P}-sp-run{left:104%;opacity:0;animation:${P}-drift var(--dur,3s) linear infinite;animation-delay:var(--delay,0s)}
+.${P}-sp-run{left:calc((100% - 30px)*var(--${P}-pos,0) + 15px);opacity:0;animation:${P}-drift var(--dur,3s) linear infinite;animation-delay:var(--delay,0s)}
 @keyframes ${P}-fade-in{from{opacity:0}to{opacity:1}}
 @keyframes ${P}-float{0%,100%{transform:translateY(0) scale(var(--b,1));opacity:var(--b,1)}50%{transform:translateY(-3px) scale(var(--b,1));opacity:calc(var(--b,1)*.72)}}
 @keyframes ${P}-exit{0%{left:var(--x,4%);opacity:var(--b,1)}100%{left:-4%;opacity:0}}
-@keyframes ${P}-drift{0%{left:104%;opacity:0}6%{opacity:var(--b,1)}94%{opacity:var(--b,1)}100%{left:-4%;opacity:0}}
+@keyframes ${P}-drift{0%{left:calc((100% - 30px)*var(--${P}-pos,0) + 15px);opacity:0}6%{opacity:var(--b,1)}94%{opacity:var(--b,1)}100%{left:-4%;opacity:0}}
 
 /* ---------- arrival bloom ----------
    Reaching the far-right stop fires a ONE-SHOT burst of motes out of the knob,
@@ -798,6 +798,7 @@ body[data-ds-dark-theme] .${P}-root{
        * while the layer fades out. Falls back to normal CSS animation when the
        * Web Animations API is unavailable. */
       useEffect(() => {
+        if (!open) return undefined;
         const root = popupRef.current;
         if (!root || typeof root.querySelectorAll !== 'function'
           || typeof requestAnimationFrame !== 'function' || typeof performance === 'undefined') return undefined;
@@ -825,7 +826,7 @@ body[data-ds-dark-theme] .${P}-root{
         };
         frame = requestAnimationFrame(step);
         return () => cancelAnimationFrame(frame);
-      }, [fast]);
+      }, [fast, open]);
       const fastSessionRef = useRef(sessionId);
 
       /* Every Fast change is written through, so it survives the remount that a
@@ -1725,7 +1726,7 @@ body[data-ds-dark-theme] .${P}-root{
               h('div', { className: `${P}-sparks ${P}-sparks-run` },
                 ...sparkles.map(s => h('i', {
                   key: s.key, className: `${P}-sp ${P}-sp-run`,
-                  style: { top: s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.delay }
+                  style: { top: s.top, [`--b`]: s.b, [`--dur`]: s.dur }
                 }))),
               /* the arrival bloom: keyed on the arrival counter, so mounting a
                * new key restarts every mote's animation from 0% */
