@@ -599,22 +599,27 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
   assert.match(src, /\.\$\{P\}-sp-float\{animation:\$\{P\}-float/, 'the float layer uses float');
   assert.match(src, /\.\$\{P\}-sp-run\{left:calc\(\(100% - 30px\)\*var\(--\$\{P\}-pos,0\) \+ 15px\);opacity:0;animation:\$\{P\}-drift/,
     'the run layer starts at the knob');
-  assert.doesNotMatch(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,200}--delay/,
-    'run particles are not pre-distributed across the rail');
+  assert.match(src, /runDelay: \(0\.06 \+ i \* 0\.08\)/, 'run particles are staggered');
+  assert.match(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,220}--delay`\]: s\.runDelay/,
+    'run particles use the staggered delay');
   assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 1\.4s cubic-bezier/,
     'turning Fast on accelerates the same floating dust left');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
     'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\{opacity:0\}/,
-    'Fast mode hides the level dots outside Ultra');
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\.passed\{animation:\$\{P\}-dot-fly/,
+    'Fast mode flies the passed level dots left');
+  assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-dot\{opacity:0\}/,
+    'Ultra without Fast still hides the level dots');
+  assert.doesNotMatch(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\{opacity:0\}/,
+    'right-side level dots remain visible in Fast');
   assert.match(src, /className: `\$\{P\}-sparks \$\{P\}-sparks-float`/, 'the float layer is present');
   assert.match(src, /className: `\$\{P\}-sparks \$\{P\}-sparks-run`/, 'the run layer is present');
   assert.doesNotMatch(src, /sparks-exit/, 'there is no cloned exit layer to disappear');
-  assert.match(src, /const root = popupRef\.current;/, 'the run ramp reads the popover ref');
+  assert.match(src, /const root = popupRef\.current;/, 'the run restart reads the popover ref');
   assert.doesNotMatch(src, /popoverRef/, 'the selector never references an undeclared popoverRef');
-  assert.match(src, /animation\.currentTime = 0;[\s\S]{0,80}animation\.playbackRate = 0\.15;/,
-    'the run layer ramps up from a slow rate');
-  assert.match(src, /from\[index\] \* \(1 - t\)/, 'leaving Fast ramps the rate down');
+  assert.match(src, /animation\.playbackRate = 1;[\s\S]{0,80}animation\.currentTime = 0;/,
+    'the run layer restarts at full speed');
+  assert.doesNotMatch(src, /playbackRate = 0\.15/, 'the run layer no longer accelerates from a low rate');
 });
 
 /* ── compact composer seat ─────────────────────────────────────────────── */

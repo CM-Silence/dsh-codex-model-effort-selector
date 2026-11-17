@@ -432,8 +432,9 @@ window.__ModuleLoader__.load({
    themes (the light knob is white, the dark knob is #f9fafb). */
 .${P}-dot.passed{background:var(--${P}-dotPassed,rgba(255,255,255,.55))}
 .${P}-dot.hovered{transform:scale(1.75)}
-.${P}-popover.peak .${P}-dot{opacity:0}
-.${P}-popover.fast-mode .${P}-dot{opacity:0}
+.${P}-popover.peak:not(.fast-mode) .${P}-dot{opacity:0}
+.${P}-popover.fast-mode .${P}-dot.passed{animation:${P}-dot-fly var(--${P}-fly-dur,.9s) cubic-bezier(.4,0,.8,.4) var(--${P}-fly-delay,0s) forwards}
+@keyframes ${P}-dot-fly{0%{left:calc((100% - 30px)*var(--${P}-tick,0) + 15px);opacity:1;transform:scale(1)}100%{left:-6px;opacity:0;transform:scale(.45)}}
 .${P}-sparks{opacity:0;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .8s ease}
 .${P}-popover.peak .${P}-sparks-float,
 .${P}-popover.fast-mode .${P}-sparks-run{opacity:1}
@@ -627,7 +628,8 @@ body[data-ds-dark-theme] .${P}-root{
           top: (8 + 84 * hash01(i * 13 + 5)).toFixed(1) + '%',
           b: b.toFixed(2),
           dur: (1.6 + 2.4 * hash01(i * 3 + 11)).toFixed(2) + 's',
-          delay: (-(i * PHI % 1) * 4).toFixed(2) + 's'
+          delay: (-(i * PHI % 1) * 4).toFixed(2) + 's',
+          runDelay: (0.06 + i * 0.08).toFixed(2) + 's'
         });
       }
       return out;
@@ -793,39 +795,20 @@ body[data-ds-dark-theme] .${P}-root{
       const fastRef = useRef(fast);
       fastRef.current = fast;
 
-      /* Ramp the run layer's playbackRate instead of switching speed instantly:
-       * entering Fast starts at 0.15x and eases to 1x; leaving it eases to 0
-       * while the layer fades out. Falls back to normal CSS animation when the
-       * Web Animations API is unavailable. */
+      /* Restart the run layer at the knob whenever Fast opens or is switched
+       * on. The particles are then emitted by their own staggered delays, each
+       * already at full speed; no playbackRate ramp. */
       useEffect(() => {
-        if (!open) return undefined;
+        if (!open || !fast) return undefined;
         const root = popupRef.current;
-        if (!root || typeof root.querySelectorAll !== 'function'
-          || typeof requestAnimationFrame !== 'function' || typeof performance === 'undefined') return undefined;
+        if (!root || typeof root.querySelectorAll !== 'function') return undefined;
         const animations = Array.from(root.querySelectorAll(`.${P}-sp-run`))
           .flatMap(node => (typeof node.getAnimations === 'function' ? node.getAnimations() : []));
-        if (!animations.length) return undefined;
-        if (fast) {
-          animations.forEach(animation => {
-            animation.currentTime = 0;
-            animation.playbackRate = 0.15;
-          });
-        }
-        const from = animations.map(animation => animation.playbackRate || 1);
-        const started = performance.now();
-        const duration = fast ? 900 : 800;
-        let frame = 0;
-        const step = (now) => {
-          const t = Math.min(1, (now - started) / duration);
-          animations.forEach((animation, index) => {
-            animation.playbackRate = fast
-              ? from[index] + (1 - from[index]) * t
-              : from[index] * (1 - t);
-          });
-          if (t < 1) frame = requestAnimationFrame(step);
-        };
-        frame = requestAnimationFrame(step);
-        return () => cancelAnimationFrame(frame);
+        animations.forEach(animation => {
+          animation.playbackRate = 1;
+          animation.currentTime = 0;
+        });
+        return undefined;
       }, [fast, open]);
       const fastSessionRef = useRef(sessionId);
 
@@ -1713,11 +1696,18 @@ body[data-ds-dark-theme] .${P}-root{
               onKeyDown: keyDown
             },
               h('div', { className: `${P}-fill` }),
-              ...efforts.map((effort, i) => h('i', {
-                key: effort.id,
-                className: `${P}-dot${i <= index ? ' passed' : ''}${hovered === i ? ' hovered' : ''}`,
-                style: { [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0 }
-              })),
+              ...efforts.map((effort, i) => {
+                const leftBy = Math.max(0, index - i);
+                return h('i', {
+                  key: effort.id,
+                  className: `${P}-dot${i <= index ? ' passed' : ''}${hovered === i ? ' hovered' : ''}`,
+                  style: {
+                    [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0,
+                    [`--${P}-fly-delay`]: (leftBy * 0.04).toFixed(2) + 's',
+                    [`--${P}-fly-dur`]: (0.9 + leftBy * 0.05).toFixed(2) + 's'
+                  }
+                });
+              }),
               h('div', { className: `${P}-sparks ${P}-sparks-float` },
                 ...sparkles.map(s => h('i', {
                   key: s.key, className: `${P}-sp ${P}-sp-float`,
@@ -1726,7 +1716,7 @@ body[data-ds-dark-theme] .${P}-root{
               h('div', { className: `${P}-sparks ${P}-sparks-run` },
                 ...sparkles.map(s => h('i', {
                   key: s.key, className: `${P}-sp ${P}-sp-run`,
-                  style: { top: s.top, [`--b`]: s.b, [`--dur`]: s.dur }
+                  style: { top: s.top, [`--b`]: s.b, [`--dur`]: s.dur, [`--delay`]: s.runDelay }
                 }))),
               /* the arrival bloom: keyed on the arrival counter, so mounting a
                * new key restarts every mote's animation from 0% */
