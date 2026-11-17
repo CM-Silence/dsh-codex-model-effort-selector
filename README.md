@@ -241,7 +241,7 @@ dsh plugin --profile desktop list | Select-String codex-model-effort
   徽标是装饰，模型选择器是功能，详见 [docs/INCIDENTS.md 第 20 条](docs/INCIDENTS.md)
 - **官方模型菜单没有入口了**：那颗席按钮是官方菜单的唯一入口，被遮蔽后打不开；切模型仍有本插件面板与官方 **`/model` 命令**两条路
 - **档位由模型决定**：滑条只显示当前模型实际公布的推理强度；模型没有推理元数据时显示「此模型未提供推理强度」
-- **Ultra 命名**：`max` 档在 Codex 里叫 Ultra，本插件沿用该命名；若某模型把最高档命名为别的 id，则显示模型自己的名字
+- **Ultra 命名**：如果最高档不叫 `ultra`，且较低档位里没有 `ultra`（不区分大小写），界面把最高档显示为 **Ultra**；如果较低档已经出现 `ultra`，最高档保留模型自己的名字（例如 `high / ultra / max ultra` 时最高档仍显示 `max ultra`）
 - **模型列表顺序以宿主目录为准**：目录没列到的模型，面板里也看不到
 
 ---
@@ -346,11 +346,14 @@ test/                      离线断言 + 配色断言 + 折叠回归 + 真实 S
 
 ## 致谢与许可
 
+- 原项目：[ABING1111/dsh-codex-model-effort-selector](https://github.com/ABING1111/dsh-codex-model-effort-selector)，
+  原作者 **ABING1111**。本仓库 [CM-Silence/dsh-codex-selector](https://github.com/CM-Silence/dsh-codex-selector)
+  由 **CM-Silence** 维护。
 - 模型列表的交互参照了 [Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider)
   的**两级下钻**实现（本插件据此取代了早期自相矛盾的折叠集合方案）。
 - 原版几何与配色以 Codex 桌面版录屏为第一手依据，并与其他社区的 Codex 滑块移植版交叉验证，
   详见 [`docs/SPEC.md`](docs/SPEC.md) 的证据来源一节。
 - 目标宿主是 [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)，
   本插件只使用它的公开面（槽位、`modelDirectories` 服务与语义 DOM 锚点）。
-- 许可 **MIT**（见 [LICENSE](LICENSE)）。**无可选第三方代码**：闪电标 / 雪弗龙是自己画的路径，
-  粒子层与全部 CSS 均为手写。
+- 许可 **MIT**（见 [LICENSE](LICENSE)）：Copyright (c) 2026 **ABING1111** 与 **CM-Silence**，
+  保留原项目的版权声明。

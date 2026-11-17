@@ -309,6 +309,23 @@ window.__ModuleLoader__.load({
       return effort.name || effort.id;
     }
 
+    /** A level is literally "ultra" by id or display name, case-insensitively. */
+    function isUltraLevel(effort) {
+      if (!effort) return false;
+      return String(effort.id || '').trim().toLowerCase() === 'ultra'
+        || String(effort.name || '').trim().toLowerCase() === 'ultra';
+    }
+
+    /** Highest-stop label rule shared by the rail heading and the trigger. */
+    function effortLabelAt(effort, efforts, index, t) {
+      if (!effort) return '';
+      if (index !== efforts.length - 1) return effortLabel(effort, t);
+      if (isUltraLevel(effort)) return t('effort.max') || 'Ultra';
+      const lowerHasUltra = efforts.slice(0, -1).some(isUltraLevel);
+      if (lowerHasUltra) return effort.name || effort.id || effortLabel(effort, t);
+      return t('effort.max') || 'Ultra';
+    }
+
     /* ------------------------------------------------------------------ *
      * Geometry — measured from the original recording.
      *
@@ -1568,9 +1585,12 @@ body[data-ds-dark-theme] .${P}-root{
 
       /* ---------- render ---------- */
       const currentLabel = efforts.length
-        ? (effortLabel(efforts[index], t) || t('effort'))
+        ? (effortLabelAt(efforts[index], efforts, index, t) || t('effort'))
         : '';
-      const triggerLabel = effortLabel(efforts.find(e => e.id === savedEffort), t);
+      const savedIndex = efforts.findIndex(e => e.id === savedEffort);
+      const triggerLabel = savedIndex >= 0
+        ? effortLabelAt(efforts[savedIndex], efforts, savedIndex, t)
+        : '';
       const status = error || (state.status === 'error' ? t('failed') : '');
 
       /* Height is computed from the rows actually rendered, so the popover fits

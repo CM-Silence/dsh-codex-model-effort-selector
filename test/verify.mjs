@@ -186,6 +186,13 @@ check('subagent sessions are reported unavailable', () => {
 // --- pure logic mirrored from the bundle ----------------------------------
 // (kept in sync by asserting against the shipped source text)
 
+check('the highest stop becomes Ultra only when no lower stop is Ultra', () => {
+  assert.match(src, /function effortLabelAt\(effort, efforts, index, t\)/);
+  assert.match(src, /const lowerHasUltra = efforts\.slice\(0, -1\)\.some\(isUltraLevel\)/);
+  assert.match(src, /if \(lowerHasUltra\) return effort\.name \|\| effort\.id/);
+  assert.match(src, /return t\('effort\.max'\) \|\| 'Ultra'/);
+});
+
 check('peak ids are max/ultra (not "last stop")', () => {
   assert.match(src, /const PEAK_IDS = \['max', 'ultra'\];/);
   assert.match(src, /isPeakId = id => PEAK_IDS\.includes/);

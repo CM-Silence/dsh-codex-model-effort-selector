@@ -272,8 +272,10 @@ dsh plugin --profile desktop list | Select-String codex-model-effort
 - **Levels come from the model**: the slider only shows the reasoning levels the current
   model actually declares; with no reasoning metadata the pane says "this model provides
   no reasoning effort levels"
-- **The name "Ultra"**: the `max` level is called Ultra in Codex and this plugin keeps that
-  naming; if a model names its top level differently, that model's own name is shown
+- **The name "Ultra"**: if the highest stop is not called `ultra` and no lower stop is
+  `ultra` (case-insensitive), the UI shows the highest stop as **Ultra**. If a lower stop is
+  already `ultra`, the highest stop keeps the model's own name (for example, `high / ultra /
+  max ultra` still shows `max ultra` at the top)
 - **Model ordering follows the host catalog**: models the catalog does not list are not
   shown in the pane
 
@@ -394,6 +396,9 @@ metadata, the pane says "this model provides no reasoning effort levels".
 
 ## Credits & license
 
+- The original project is [ABING1111/dsh-codex-model-effort-selector](https://github.com/ABING1111/dsh-codex-model-effort-selector),
+  by **ABING1111**. This repository, [CM-Silence/dsh-codex-selector](https://github.com/CM-Silence/dsh-codex-selector),
+  is maintained by **CM-Silence**.
 - The model pane's interaction follows the **two-level drill-down** of
   [Bai-2008/a-better-dsh-codex-effort-slider](https://github.com/Bai-2008/a-better-dsh-codex-effort-slider)
   (this plugin adopted it to replace an earlier, self-contradictory collapsible-set scheme).
@@ -403,5 +408,5 @@ metadata, the pane says "this model provides no reasoning effort levels".
 - The target host is [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness);
   this plugin only uses its public surface (slots, the `modelDirectories` service and
   semantic DOM anchors).
-- Licensed **MIT** (see [LICENSE](LICENSE)). **No optional third-party code**: the bolt and
-  chevron icons are hand-drawn paths, and the particle layer and all CSS are hand-written.
+- Licensed **MIT** (see [LICENSE](LICENSE)): Copyright (c) 2026 **ABING1111** and **CM-Silence**;
+  the original copyright notice is retained.

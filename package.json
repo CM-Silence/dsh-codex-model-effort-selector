@@ -5,7 +5,6 @@
   "type": "module",
   "license": "MIT",
   "icon": "./icon.svg",
-  "private": true,
   "keywords": [
     "dsh",
     "deepseek-harness",
@@ -39,6 +38,10 @@
   ],
   "peerDependencies": {
     "@deepseek-ai/dsh": ">=0.2.0-rc.2 <0.3.0"
+  },
+  "scripts": {
+    "test": "node test/verify.mjs && node test/motion.mjs",
+    "prepublishOnly": "npm test"
   },
   "dsh": {
     "bundle": {
