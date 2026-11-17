@@ -606,8 +606,11 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
     'turning Fast on accelerates the same floating dust left');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
     'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\.passed\{animation:\$\{P\}-dot-fly/,
-    'Fast mode flies the passed level dots left');
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\.passed\{animation:\$\{P\}-dot-fly 1\.2s cubic-bezier/,
+    'Fast mode flies the passed level dots left at one constant rate');
+  assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1\}100%\{transform:translateX\(-260px\)/,
+    'all tick dots travel the same distance, so they cannot bunch up');
+  assert.match(src, /className: `\$\{P\}-dots`/, 'the dots live in a clipping layer');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-dot\{opacity:0\}/,
     'Ultra without Fast still hides the level dots');
   assert.doesNotMatch(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\{opacity:0\}/,

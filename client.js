@@ -432,9 +432,10 @@ window.__ModuleLoader__.load({
    themes (the light knob is white, the dark knob is #f9fafb). */
 .${P}-dot.passed{background:var(--${P}-dotPassed,rgba(255,255,255,.55))}
 .${P}-dot.hovered{transform:scale(1.75)}
+.${P}-dots{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .${P}-popover.peak:not(.fast-mode) .${P}-dot{opacity:0}
-.${P}-popover.fast-mode .${P}-dot.passed{animation:${P}-dot-fly var(--${P}-fly-dur,.9s) cubic-bezier(.4,0,.8,.4) var(--${P}-fly-delay,0s) forwards}
-@keyframes ${P}-dot-fly{0%{left:calc((100% - 30px)*var(--${P}-tick,0) + 15px);opacity:1;transform:scale(1)}100%{left:-6px;opacity:0;transform:scale(.45)}}
+.${P}-popover.fast-mode .${P}-dot.passed{animation:${P}-dot-fly 1.2s cubic-bezier(.4,0,.8,.4) forwards}
+@keyframes ${P}-dot-fly{0%{transform:translateX(0);opacity:1}100%{transform:translateX(-260px);opacity:0}}
 .${P}-sparks{opacity:0;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .8s ease}
 .${P}-popover.peak .${P}-sparks-float,
 .${P}-popover.fast-mode .${P}-sparks-run{opacity:1}
@@ -1696,18 +1697,12 @@ body[data-ds-dark-theme] .${P}-root{
               onKeyDown: keyDown
             },
               h('div', { className: `${P}-fill` }),
-              ...efforts.map((effort, i) => {
-                const leftBy = Math.max(0, index - i);
-                return h('i', {
+              h('div', { className: `${P}-dots` },
+                ...efforts.map((effort, i) => h('i', {
                   key: effort.id,
                   className: `${P}-dot${i <= index ? ' passed' : ''}${hovered === i ? ' hovered' : ''}`,
-                  style: {
-                    [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0,
-                    [`--${P}-fly-delay`]: (leftBy * 0.04).toFixed(2) + 's',
-                    [`--${P}-fly-dur`]: (0.9 + leftBy * 0.05).toFixed(2) + 's'
-                  }
-                });
-              }),
+                  style: { [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0 }
+                }))),
               h('div', { className: `${P}-sparks ${P}-sparks-float` },
                 ...sparkles.map(s => h('i', {
                   key: s.key, className: `${P}-sp ${P}-sp-float`,
