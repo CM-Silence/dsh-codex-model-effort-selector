@@ -4,7 +4,7 @@
 > **Codex 桌面版风格「模型 + 推理强度」选择器**：
 > 把输入框上那枚紧凑的模型席按钮，换成 Codex 风格的弹层 —— 一个入口，两块面板。
 
-![version](https://img.shields.io/badge/version-1.2.1-blue?style=flat-square)
+![version](https://img.shields.io/badge/version-1.2.0-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![tests](https://img.shields.io/badge/tests-120%20passing-brightgreen?style=flat-square)
 ![dsh](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
@@ -23,7 +23,6 @@
 ## 目录
 
 - [这是什么](#这是什么)
-- [1.2.1 修复](#121-修复)
 - [1.2.0 修复](#120-修复)
 - [功能](#功能)
 - [安装](#安装)
@@ -53,14 +52,11 @@ DSH 输入框上原本只有一枚很小的模型按钮。本插件用 `priority
 
 ---
 
-## 1.2.1 修复
-
-- **Ultra 切 Fast 后再切到低挡位，刻度点重新出现**：Fast 从 Ultra 启动时给滑条打上 `data-fast-ticks-hidden`，本次 Fast 会话内即使离开 Ultra、挡位变化，刻度点也保持隐藏；关闭 Fast 才清除。
-- **在别的页面收回面板时，挡位调节器闪一下**：关闭动画期间保留原页面内容，180ms 关闭动画结束后才在隐藏状态重置 pane/view；关闭态且尚未展示时禁用 pane/page 过渡，避免收回时 rail 被重新布局闪一下。
-
----
-
 ## 1.2.0 修复
+
+- **Ultra 切 Fast 后再切到低挡位，刻度点重新出现**：Fast 从 Ultra 启动时给滑条打上 `data-fast-ticks-hidden`，本次 Fast 会话内即使离开 Ultra、挡位变化，装饰刻度层也保持隐藏；关闭 Fast 才清除。
+- **在别的页面收回面板时，挡位调节器闪一下**：关闭动画期间保留原页面内容，180ms 关闭动画结束后才在隐藏状态重置 pane/view；关闭态且尚未展示时禁用 pane/page 过渡，避免收回时 rail 被重新布局闪一下。
+- **Fast 下连续降低挡位时旧刻度点消失**：真实刻度点固定在填充层下面，另建只包含已过点的装饰层负责飞走；降低挡位时填充退开，原挡位点自然露出，不再被装饰层的动画带走。
 
 - **新版 DSH 里弹层向右错位**：新版 composer 的祖先可能带 `transform` / `filter` / `backdrop-filter` / `will-change`，`position: fixed` 不再相对视口，弹层会整体右漂。现在弹层和 Fast 说明一起 portal 到 `document.body` 的 `display: contents` 层，保留主题变量但不产生布局盒；水平方向改为卡片右缘对齐触发器右缘，再按视口 12px 边距夹紧。
 - **Ultra 星尘动画**：Ultra 只保留上下漂浮；打开 Fast 时同一批星尘从各自位置缓慢加速向左，run 层同时从右边生成新的星尘；关闭 Fast 时 run 层减速、渐隐，浮动层渐现。滑条点击切档也让旋钮平滑滑过去，不再瞬移。

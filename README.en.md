@@ -5,7 +5,7 @@
 > it replaces the compact model seat above the composer with a Codex-style
 > popover — one trigger, two panes.
 
-![version](https://img.shields.io/badge/version-1.2.1-blue?style=flat-square)
+![version](https://img.shields.io/badge/version-1.2.0-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![tests](https://img.shields.io/badge/tests-120%20passing-brightgreen?style=flat-square)
 ![dsh](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
@@ -25,7 +25,6 @@
 ## Table of contents
 
 - [What it is](#what-it-is)
-- [Fixes in 1.2.1](#fixes-in-121)
 - [Fixes in 1.2.0](#fixes-in-120)
 - [Features](#features)
 - [Install](#install)
@@ -59,14 +58,11 @@ measurements are in [`docs/SPEC.md`](docs/SPEC.md).
 
 ---
 
-## Fixes in 1.2.1
-
-- **Tick dots reappearing after Ultra → lower stop in Fast**: starting Fast from Ultra now stamps `data-fast-ticks-hidden` on the rail, keeping every tick hidden for the rest of that Fast session even after leaving Ultra; switching Fast off clears it.
-- **Rail flash when closing the panel from another page**: the visible page now stays intact through the close animation, and pane/view reset happens 180ms later while the popover is hidden. Pane/page transitions are disabled before the popover has been presented, so closing no longer re-lays-out the rail for a frame.
-
----
-
 ## Fixes in 1.2.0
+
+- **Tick dots reappearing after Ultra → lower stop in Fast**: starting Fast from Ultra now stamps `data-fast-ticks-hidden` on the rail, keeping the decorative tick overlay hidden for the rest of that Fast session even after leaving Ultra; switching Fast off clears it.
+- **Rail flash when closing the panel from another page**: the visible page now stays intact through the close animation, and pane/view reset happens 180ms later while the popover is hidden. Pane/page transitions are disabled before the popover has been presented, so closing no longer re-lays-out the rail for a frame.
+- **Tick dot disappearing when lowering the stop repeatedly in Fast**: the real tick field now sits beneath the opaque fill, while a decorative overlay holds only the passed ticks and plays the departure. When the fill retreats, the previous stop's real tick is simply revealed again.
 
 - **Popover offset in newer DSH builds**: a composer ancestor may now carry `transform` / `filter` / `backdrop-filter` / `will-change`, so a `position: fixed` popover is no longer viewport-relative and drifts right. The popover and Fast tooltip are now portaled into a `display: contents` layer on `document.body`, keeping theme variables without creating a layout box; horizontal placement aligns the card's right edge to the trigger and clamps to a 12px viewport margin.
 - **Ultra stardust animation**: Ultra only floats. Turning Fast on accelerates the same dust leftward from its current spread, while a run layer spawns fresh dust from the right; turning Fast off slows and fades the run layer while the float layer fades back in. Clicking a level now slides the knob instead of teleporting.
