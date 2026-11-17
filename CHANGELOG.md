@@ -3,7 +3,7 @@
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [1.2.0] — 2026-11-17
 
 ### 修复
 
@@ -286,5 +286,5 @@
 | 10 | 第一级每行右侧的灰色模型名冗余 | 第二级已经列出并标勾选 |
 | 11 | 蓝点在 provider 名左侧，与「状态在右」的阅读习惯相反 | 蓝点位置未随名字推到右侧 |
 
-[Unreleased]: https://github.com/CM-Silence/dsh-codex-selector/compare/v1.0.0...HEAD
+[1.2.0]: https://github.com/CM-Silence/dsh-codex-selector/releases/tag/v1.2.0
 [1.0.0]: https://github.com/CM-Silence/dsh-codex-selector/releases/tag/v1.0.0

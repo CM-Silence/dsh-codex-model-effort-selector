@@ -5,7 +5,7 @@
 > it replaces the compact model seat above the composer with a Codex-style
 > popover — one trigger, two panes.
 
-![version](https://img.shields.io/badge/version-1.1.2-blue?style=flat-square)
+![version](https://img.shields.io/badge/version-1.2.0-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![tests](https://img.shields.io/badge/tests-120%20passing-brightgreen?style=flat-square)
 ![dsh](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
@@ -25,6 +25,7 @@
 ## Table of contents
 
 - [What it is](#what-it-is)
+- [Fixes in 1.2.0](#fixes-in-120)
 - [Features](#features)
 - [Install](#install)
 - [Usage](#usage)
@@ -54,6 +55,14 @@ diameter, tick dots and row pitch were all measured **frame-by-frame from a
 93-frame recording of the Codex desktop app** (the recording is 1.385×, so
 `CSS px = recorded px ÷ 1.385`); colours were sampled the same way. Full
 measurements are in [`docs/SPEC.md`](docs/SPEC.md).
+
+---
+
+## Fixes in 1.2.0
+
+- **Popover offset in newer DSH builds**: a composer ancestor may now carry `transform` / `filter` / `backdrop-filter` / `will-change`, so a `position: fixed` popover is no longer viewport-relative and drifts right. The popover and Fast tooltip are now portaled into a `display: contents` layer on `document.body`, keeping theme variables without creating a layout box; horizontal placement aligns the card's right edge to the trigger and clamps to a 12px viewport margin.
+- **Ultra stardust animation**: Ultra only floats. Turning Fast on accelerates the same dust leftward from its current spread, while a run layer spawns fresh dust from the right; turning Fast off slows and fades the run layer while the float layer fades back in. Clicking a level now slides the knob instead of teleporting.
+- **Compact icon disappearing**: in the icon-only composer mode, `--dsh-composer-model-icon-display` becomes `block`, but the compact SVG had no size and could be flex-shrunk to zero. The icon box and SVG are now both a non-shrinking 16×16.
 
 ---
 
