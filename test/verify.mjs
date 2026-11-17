@@ -586,19 +586,19 @@ check('NEW: a click slides to the level instead of painting on pointerdown', () 
 /* ── rail sparkles ─────────────────────────────────────────────────────── */
 
 check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the level dots', () => {
-  assert.match(src, /@keyframes \$\{P\}-drift\{0%\{left:calc\(\(100% - 30px\)\*var\(--\$\{P\}-pos,0\) \+ 15px\);opacity:0\}/,
-    'new running sparkles spawn at the knob position');
+  assert.match(src, /@keyframes \$\{P\}-drift\{0%\{left:104%;opacity:0\}/,
+    'new running sparkles spawn at the far end of the rail');
   assert.match(src, /100%\{left:-4%;opacity:0\}\}/,
     'and travel leftwards');
-  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\);animation-timing-function:cubic-bezier\(\.2,0,\.8,\.47\)\}4%\{transform:translateX\(-4px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
-    'the floating dust ramps up then shifts by one constant distance');
+  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\);animation-timing-function:cubic-bezier\(\.33,0,\.67,1\)\}15%\{transform:translateX\(-6px\)[^}]*\}35%\{transform:translateX\(-60px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
+    'the floating dust starts almost still, then accelerates and clears the rail');
   assert.match(src, /@keyframes \$\{P\}-float/, 'Ultra has a float-only animation');
   assert.match(src, /x: \(4 \+ 92 \* hash01\(i \* 17 \+ 9\)\)/, 'floating particles are spread horizontally');
   assert.match(src, /left: s\.x/, 'the spread is applied inline');
   assert.match(src, /'--x': s\.x/, 'the exit keyframes start from each sparkle position');
   assert.match(src, /\.\$\{P\}-sp-float\{animation:\$\{P\}-float/, 'the float layer uses float');
-  assert.match(src, /\.\$\{P\}-sp-run\{left:calc\(\(100% - 30px\)\*var\(--\$\{P\}-pos,0\) \+ 15px\);opacity:0;animation:\$\{P\}-drift/,
-    'the run layer starts at the knob');
+  assert.match(src, /\.\$\{P\}-sp-run\{left:104%;opacity:0;animation:\$\{P\}-drift/,
+    'the run layer starts at the far end');
   assert.match(src, /runDelay: \(0\.06 \+ i \* 0\.08\)/, 'run particles are staggered');
   assert.match(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,220}--delay`\]: s\.runDelay/,
     'run particles use the staggered delay');
