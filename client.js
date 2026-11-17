@@ -442,11 +442,11 @@ window.__ModuleLoader__.load({
 .${P}-popover.peak:not(.fast-mode) .${P}-sparks-float{animation:${P}-fade-in .8s ease both}
 .${P}-sp{position:absolute;left:var(--x,4%);width:3px;height:3px;border-radius:50%;background:#fff;opacity:var(--b,1);transform:scale(var(--b,1))}
 .${P}-sp-float{animation:${P}-float var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s)}
-.${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 2.8s linear forwards}
+.${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 2.45s ease-in .35s forwards}
 .${P}-sp-run{left:104%;opacity:0;animation:${P}-drift var(--dur,3s) linear infinite;animation-delay:var(--delay,0s)}
 @keyframes ${P}-fade-in{from{opacity:0}to{opacity:1}}
 @keyframes ${P}-float{0%,100%{transform:translateY(0) scale(var(--b,1));opacity:var(--b,1)}50%{transform:translateY(-3px) scale(var(--b,1));opacity:calc(var(--b,1)*.72)}}
-@keyframes ${P}-exit{0%{transform:translateX(0) scale(var(--b,1));opacity:var(--b,1);animation-timing-function:cubic-bezier(.33,0,.67,1)}15%{transform:translateX(-6px) scale(var(--b,1));opacity:var(--b,1);animation-timing-function:cubic-bezier(.4,0,.6,1)}35%{transform:translateX(-60px) scale(var(--b,1));opacity:var(--b,1);animation-timing-function:linear}100%{transform:translateX(-260px) scale(var(--b,1));opacity:0}}
+@keyframes ${P}-exit{0%{transform:translateX(0) scale(var(--b,1));opacity:var(--b,1)}100%{transform:translateX(-260px) scale(var(--b,1));opacity:0}}
 @keyframes ${P}-drift{0%{left:104%;opacity:0}6%{opacity:var(--b,1)}94%{opacity:var(--b,1)}100%{left:-4%;opacity:0}}
 
 /* ---------- arrival bloom ----------
