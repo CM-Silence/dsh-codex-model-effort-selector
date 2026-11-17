@@ -435,6 +435,8 @@ window.__ModuleLoader__.load({
 .${P}-dots{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .${P}-popover.peak .${P}-dot{opacity:0}
 .${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-exit 2.45s ease-in .35s forwards}
+.${P}-popover:not(.fast-mode):not(.peak) .${P}-dot.left-of-knob{animation:${P}-dot-return .45s ease both}
+@keyframes ${P}-dot-return{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
 .${P}-sparks{opacity:0;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .8s ease}
 .${P}-popover.peak .${P}-sparks-float,
 .${P}-popover.fast-mode .${P}-sparks-run{opacity:1}

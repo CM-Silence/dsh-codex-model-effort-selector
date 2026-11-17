@@ -608,6 +608,8 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
     'leaving Fast fades the float layer back in');
   assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-exit 2\.45s ease-in \.35s/,
     'Fast mode reuses the float-dust exit for the left tick dots');
+  assert.match(src, /\.\$\{P\}-popover:not\(\.fast-mode\):not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-return/,
+    'leaving Fast fades the left tick dots back in');
   assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
   assert.match(src, /top:clamp\(2px,var\(--sp-top,50%\),calc\(100% - 5px\)\)/,
     'the dust keeps a small gap from the rail edges');
