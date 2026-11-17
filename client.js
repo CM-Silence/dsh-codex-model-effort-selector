@@ -433,8 +433,8 @@ window.__ModuleLoader__.load({
 .${P}-dot.passed{background:var(--${P}-dotPassed,rgba(255,255,255,.55))}
 .${P}-dot.hovered{transform:scale(1.75)}
 .${P}-dots{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.${P}-popover.peak:not(.fast-mode) .${P}-dot{opacity:0}
-.${P}-popover.fast-mode .${P}-dot.passed{animation:${P}-dot-fly 1.2s cubic-bezier(.4,0,.8,.4) forwards}
+.${P}-popover.peak .${P}-dot{opacity:0}
+.${P}-popover.fast-mode:not(.peak) .${P}-dot.left-of-knob{animation:${P}-dot-fly 3s linear forwards}
 @keyframes ${P}-dot-fly{0%{transform:translateX(0);opacity:1}100%{transform:translateX(-260px);opacity:0}}
 .${P}-sparks{opacity:0;transition:width .18s cubic-bezier(.2,.8,.2,1),opacity .8s ease}
 .${P}-popover.peak .${P}-sparks-float,
@@ -442,7 +442,7 @@ window.__ModuleLoader__.load({
 .${P}-popover.peak:not(.fast-mode) .${P}-sparks-float{animation:${P}-fade-in .8s ease both}
 .${P}-sp{position:absolute;left:var(--x,4%);width:3px;height:3px;border-radius:50%;background:#fff;opacity:var(--b,1);transform:scale(var(--b,1))}
 .${P}-sp-float{animation:${P}-float var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s)}
-.${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 1.4s cubic-bezier(.32,0,.67,.2) forwards}
+.${P}-popover.peak.fast-mode .${P}-sp-float{animation:${P}-exit 3s linear forwards}
 .${P}-sp-run{left:calc((100% - 30px)*var(--${P}-pos,0) + 15px);opacity:0;animation:${P}-drift var(--dur,3s) linear infinite;animation-delay:var(--delay,0s)}
 @keyframes ${P}-fade-in{from{opacity:0}to{opacity:1}}
 @keyframes ${P}-float{0%,100%{transform:translateY(0) scale(var(--b,1));opacity:var(--b,1)}50%{transform:translateY(-3px) scale(var(--b,1));opacity:calc(var(--b,1)*.72)}}
@@ -1700,7 +1700,7 @@ body[data-ds-dark-theme] .${P}-root{
               h('div', { className: `${P}-dots` },
                 ...efforts.map((effort, i) => h('i', {
                   key: effort.id,
-                  className: `${P}-dot${i <= index ? ' passed' : ''}${hovered === i ? ' hovered' : ''}`,
+                  className: `${P}-dot${i <= index ? ' passed' : ''}${i < index ? ' left-of-knob' : ''}${hovered === i ? ' hovered' : ''}`,
                   style: { [`--${P}-tick`]: efforts.length > 1 ? i / (efforts.length - 1) : 0 }
                 }))),
               h('div', { className: `${P}-sparks ${P}-sparks-float` },

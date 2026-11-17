@@ -602,17 +602,18 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
   assert.match(src, /runDelay: \(0\.06 \+ i \* 0\.08\)/, 'run particles are staggered');
   assert.match(src, /className: `\$\{P\}-sp \$\{P\}-sp-run`[\s\S]{0,220}--delay`\]: s\.runDelay/,
     'run particles use the staggered delay');
-  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 1\.4s cubic-bezier/,
-    'turning Fast on accelerates the same floating dust left');
+  assert.match(src, /\.\$\{P\}-popover\.peak\.fast-mode \.\$\{P\}-sp-float\{animation:\$\{P\}-exit 3s linear/,
+    'the floating dust leaves at the same constant speed as new dust');
   assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-sparks-float\{animation:\$\{P\}-fade-in/,
     'leaving Fast fades the float layer back in');
-  assert.match(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\.passed\{animation:\$\{P\}-dot-fly 1\.2s cubic-bezier/,
-    'Fast mode flies the passed level dots left at one constant rate');
+  assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 3s linear/,
+    'Fast mode only flies the dots strictly left of the knob');
+  assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
   assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1\}100%\{transform:translateX\(-260px\)/,
     'all tick dots travel the same distance, so they cannot bunch up');
   assert.match(src, /className: `\$\{P\}-dots`/, 'the dots live in a clipping layer');
-  assert.match(src, /\.\$\{P\}-popover\.peak:not\(\.fast-mode\) \.\$\{P\}-dot\{opacity:0\}/,
-    'Ultra without Fast still hides the level dots');
+  assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/,
+    'Ultra hides all level dots even with Fast on');
   assert.doesNotMatch(src, /\.\$\{P\}-popover\.fast-mode \.\$\{P\}-dot\{opacity:0\}/,
     'right-side level dots remain visible in Fast');
   assert.match(src, /className: `\$\{P\}-sparks \$\{P\}-sparks-float`/, 'the float layer is present');
