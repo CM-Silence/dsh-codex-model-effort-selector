@@ -5,7 +5,7 @@
 > it replaces the compact model seat above the composer with a Codex-style
 > popover — one trigger, two panes.
 
-![version](https://img.shields.io/badge/version-1.2.0-blue?style=flat-square)
+![version](https://img.shields.io/badge/version-1.2.1-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![tests](https://img.shields.io/badge/tests-120%20passing-brightgreen?style=flat-square)
 ![dsh](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
@@ -25,6 +25,7 @@
 ## Table of contents
 
 - [What it is](#what-it-is)
+- [Fixes in 1.2.1](#fixes-in-121)
 - [Fixes in 1.2.0](#fixes-in-120)
 - [Features](#features)
 - [Install](#install)
@@ -55,6 +56,13 @@ diameter, tick dots and row pitch were all measured **frame-by-frame from a
 93-frame recording of the Codex desktop app** (the recording is 1.385×, so
 `CSS px = recorded px ÷ 1.385`); colours were sampled the same way. Full
 measurements are in [`docs/SPEC.md`](docs/SPEC.md).
+
+---
+
+## Fixes in 1.2.1
+
+- **Tick dots reappearing after Ultra → lower stop in Fast**: starting Fast from Ultra now stamps `data-fast-ticks-hidden` on the rail, keeping every tick hidden for the rest of that Fast session even after leaving Ultra; switching Fast off clears it.
+- **Rail flash when closing the panel from another page**: the visible page now stays intact through the close animation, and pane/view reset happens 180ms later while the popover is hidden. Pane/page transitions are disabled before the popover has been presented, so closing no longer re-lays-out the rail for a frame.
 
 ---
 

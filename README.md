@@ -4,7 +4,7 @@
 > **Codex 桌面版风格「模型 + 推理强度」选择器**：
 > 把输入框上那枚紧凑的模型席按钮，换成 Codex 风格的弹层 —— 一个入口，两块面板。
 
-![version](https://img.shields.io/badge/version-1.2.0-blue?style=flat-square)
+![version](https://img.shields.io/badge/version-1.2.1-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![tests](https://img.shields.io/badge/tests-120%20passing-brightgreen?style=flat-square)
 ![dsh](https://img.shields.io/badge/DSH-0.2.1--rc.2-5b6ef5?style=flat-square)
@@ -23,6 +23,7 @@
 ## 目录
 
 - [这是什么](#这是什么)
+- [1.2.1 修复](#121-修复)
 - [1.2.0 修复](#120-修复)
 - [功能](#功能)
 - [安装](#安装)
@@ -49,6 +50,13 @@ DSH 输入框上原本只有一枚很小的模型按钮。本插件用 `priority
 
 **几何不是「看着像」**：卡片高度、轨道位置与尺寸、旋钮直径、刻度点、行距全部由 **Codex 桌面版录屏的 93 帧**逐像素量出
 （录屏缩放 1.385×，故 `CSS px = 录屏 px ÷ 1.385`），配色同样逐帧采样。完整测量数据见 [`docs/SPEC.md`](docs/SPEC.md)。
+
+---
+
+## 1.2.1 修复
+
+- **Ultra 切 Fast 后再切到低挡位，刻度点重新出现**：Fast 从 Ultra 启动时给滑条打上 `data-fast-ticks-hidden`，本次 Fast 会话内即使离开 Ultra、挡位变化，刻度点也保持隐藏；关闭 Fast 才清除。
+- **在别的页面收回面板时，挡位调节器闪一下**：关闭动画期间保留原页面内容，180ms 关闭动画结束后才在隐藏状态重置 pane/view；关闭态且尚未展示时禁用 pane/page 过渡，避免收回时 rail 被重新布局闪一下。
 
 ---
 

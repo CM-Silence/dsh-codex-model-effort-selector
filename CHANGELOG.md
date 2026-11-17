@@ -3,6 +3,15 @@
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.2.1] — 2026-11-17
+
+### 修复
+
+- **Ultra 切 Fast 后再切到低挡位，刻度点重新出现**：Fast 从 Ultra 启动时在滑条上标记
+  `data-fast-ticks-hidden`，本次 Fast 会话内保持隐藏；关闭 Fast 才清除。
+- **在别的页面收回面板时，挡位调节器闪一下**：关闭动画期间保留原页面，180ms 后才在
+  隐藏状态重置 pane/view；关闭态且尚未展示时禁用 pane/page 过渡。
+
 ## [1.2.0] — 2026-11-17
 
 ### 修复
@@ -286,5 +295,6 @@
 | 10 | 第一级每行右侧的灰色模型名冗余 | 第二级已经列出并标勾选 |
 | 11 | 蓝点在 provider 名左侧，与「状态在右」的阅读习惯相反 | 蓝点位置未随名字推到右侧 |
 
+[1.2.1]: https://github.com/CM-Silence/dsh-codex-selector/releases/tag/v1.2.1
 [1.2.0]: https://github.com/CM-Silence/dsh-codex-selector/releases/tag/v1.2.0
 [1.0.0]: https://github.com/CM-Silence/dsh-codex-selector/releases/tag/v1.0.0
