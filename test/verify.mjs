@@ -590,7 +590,7 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
     'new running sparkles spawn at the knob position');
   assert.match(src, /100%\{left:-4%;opacity:0\}\}/,
     'and travel leftwards');
-  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\);animation-timing-function:cubic-bezier\(\.3,0,\.7,1\)\}12%\{transform:translateX\(-18px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
+  assert.match(src, /@keyframes \$\{P\}-exit\{0%\{transform:translateX\(0\) scale\(var\(--b,1\)\);opacity:var\(--b,1\);animation-timing-function:cubic-bezier\(\.3,0,\.75,\.55\)\}8%\{transform:translateX\(-12px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
     'the floating dust ramps up then shifts by one constant distance');
   assert.match(src, /@keyframes \$\{P\}-float/, 'Ultra has a float-only animation');
   assert.match(src, /x: \(4 \+ 92 \* hash01\(i \* 17 \+ 9\)\)/, 'floating particles are spread horizontally');
@@ -609,8 +609,8 @@ check('NEW: Ultra sparkles float, Fast runs right-to-left, and Fast hides the le
   assert.match(src, /\.\$\{P\}-popover\.fast-mode:not\(\.peak\) \.\$\{P\}-dot\.left-of-knob\{animation:\$\{P\}-dot-fly 7s linear/,
     'Fast mode accelerates dots from rest to the same top speed');
   assert.match(src, /i < index \? ' left-of-knob'/, 'the knob dot is not marked to fly');
-  assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1;animation-timing-function:cubic-bezier\(\.3,0,\.7,1\)\}12%\{transform:translateX\(-18px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
-    'the dot ramps up over the first 12% and then holds one speed');
+  assert.match(src, /@keyframes \$\{P\}-dot-fly\{0%\{transform:translateX\(0\);opacity:1;animation-timing-function:cubic-bezier\(\.3,0,\.75,\.55\)\}8%\{transform:translateX\(-12px\)[^}]*\}100%\{transform:translateX\(-260px\)/,
+    'the dot ramps up over the first 8% and then holds one speed');
   assert.match(src, /className: `\$\{P\}-dots`/, 'the dots live in a clipping layer');
   assert.match(src, /\.\$\{P\}-popover\.peak \.\$\{P\}-dot\{opacity:0\}/,
     'Ultra hides all level dots even with Fast on');
